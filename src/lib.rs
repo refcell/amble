@@ -16,4 +16,7 @@
 /// The CLI Module
 pub mod cli;
 
+pub(crate) mod bins;
+pub(crate) mod libs;
+pub(crate) mod root;
 pub(crate) mod telemetry;
