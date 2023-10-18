@@ -1,5 +1,6 @@
 use clap::{ArgAction, Parser};
 use eyre::Result;
+use ptree::TreeBuilder;
 
 /// Command line arguments
 #[derive(Parser, Debug)]
@@ -12,13 +13,20 @@ pub struct Args {
     /// Dry run mode.
     /// If this flag is provided, the cli will no execute commands,
     /// printing the directories and files that would be created instead.
-    #[arg(long, short)]
+    #[arg(long)]
     dry_run: bool,
 
     /// The project name.
     /// This will be used for the binary application name.
     #[arg(long, short, default_value = "example")]
-    project_name: String,
+    name: String,
+
+    /// The path to the project directory.
+    /// By default, the current working directory is used.
+    /// If any rust artifacts are detected in the specified
+    /// or unspecified directory, an error will be thrown.
+    #[arg(long, short, default_value = ".")]
+    dir: String,
 }
 
 /// CLI Entrypoint.
@@ -26,13 +34,36 @@ pub fn run() -> Result<()> {
     let Args {
         v,
         dry_run,
-        project_name,
+        name,
+        dir,
     } = Args::parse();
 
     crate::telemetry::init_tracing_subscriber(v)?;
 
-    tracing::info!("running amble with project name: {}", project_name);
-    tracing::debug!("dry run mode: {}", dry_run);
+    let mut builder = TreeBuilder::new(dir.clone());
+    let project_dir_path = std::path::Path::new(&dir);
+    std::fs::create_dir_all(project_dir_path)?;
+
+    crate::utils::check_artifacts(project_dir_path, dry_run)?;
+
+    crate::root::create(project_dir_path, &name, dry_run, Some(&mut builder))?;
+    crate::bins::create(
+        &project_dir_path.join("bin"),
+        &name,
+        dry_run,
+        Some(&mut builder),
+    )?;
+    crate::libs::create(
+        &project_dir_path.join("crates"),
+        "common",
+        dry_run,
+        Some(&mut builder),
+    )?;
+
+    if dry_run {
+        let tree = builder.build();
+        ptree::print_tree(&tree).expect("Error printing tree");
+    }
 
     Ok(())
 }
