@@ -11,6 +11,7 @@ categories = ["command-line-utilities"]
 homepage = "https://github.com/refcell/amble"
 repository = "https://github.com/refcell/amble"
 exclude = ["benches/", "tests/"]
+inclue = ["templates/"]
 
 [[bin]]
 bench = false
