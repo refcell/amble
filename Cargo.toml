@@ -1,14 +1,21 @@
 [package]
 name = "amble"
 description = "First class, scalable rust project generator with batteries included."
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT"
 authors = ["refcell"]
 rust-version = "1.72"
+keywords = ["amble", "generator", "template", "scaffold", "cli"]
+categories = ["command-line-utilities"]
 homepage = "https://github.com/refcell/amble"
 repository = "https://github.com/refcell/amble"
 exclude = ["benches/", "tests/"]
+
+[[bin]]
+bench = false
+path = "src/main.rs"
+name = "amble"
 
 [dependencies]
 eyre = "0.6.8"

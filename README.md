@@ -11,7 +11,7 @@
 [crates.io]: https://crates.io/crates/amble
 [rustc 1.31+]: https://img.shields.io/badge/rustc_1.31+-lightgray.svg
 [Rust 1.31]: https://blog.rust-lang.org/2018/12/06/Rust-1.31-and-rust-2018.html
-[License]: https://img.shields.io/badge/license-MIT-orange.svg
+[License]: https://img.shields.io/badge/license-MIT-lightblue.svg
 [mit-license]: https://github.com/refcell/amble/blob/main/LICENSE.md
 
 **First class, scalable rust project generator with batteries included.**
