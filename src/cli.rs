@@ -13,20 +13,20 @@ pub struct Args {
     /// Dry run mode.
     /// If this flag is provided, the cli will no execute commands,
     /// printing the directories and files that would be created instead.
-    #[arg(long, short)]
+    #[arg(long)]
     dry_run: bool,
 
     /// The project name.
     /// This will be used for the binary application name.
     #[arg(long, short, default_value = "example")]
-    project_name: String,
+    name: String,
 
     /// The path to the project directory.
     /// By default, the current working directory is used.
     /// If any rust artifacts are detected in the specified
     /// or unspecified directory, an error will be thrown.
     #[arg(long, short, default_value = ".")]
-    project_dir: String,
+    dir: String,
 }
 
 /// CLI Entrypoint.
@@ -34,22 +34,22 @@ pub fn run() -> Result<()> {
     let Args {
         v,
         dry_run,
-        project_name,
-        project_dir,
+        name,
+        dir,
     } = Args::parse();
 
     crate::telemetry::init_tracing_subscriber(v)?;
 
-    let mut builder = TreeBuilder::new(project_dir.clone());
-    let project_dir_path = std::path::Path::new(&project_dir);
+    let mut builder = TreeBuilder::new(dir.clone());
+    let project_dir_path = std::path::Path::new(&dir);
     std::fs::create_dir_all(project_dir_path)?;
 
-    // todo: check if rust artifacts in the project directory.
+    crate::utils::check_artifacts(project_dir_path, dry_run)?;
 
-    crate::root::create(project_dir_path, &project_name, dry_run, Some(&mut builder))?;
+    crate::root::create(project_dir_path, &name, dry_run, Some(&mut builder))?;
     crate::bins::create(
         &project_dir_path.join("bin"),
-        &project_name,
+        &name,
         dry_run,
         Some(&mut builder),
     )?;

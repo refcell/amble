@@ -21,6 +21,13 @@ pub(crate) fn create(
     let main_rs_path_buf = project_path_buf.join("src").join("main.rs");
 
     if !dry {
+        tracing::debug!("Creating bin directory at {:?}", dir);
+        std::fs::create_dir_all(dir)?;
+    }
+    tree.as_deref_mut()
+        .map(|t| t.begin_child("bin".to_string()));
+
+    if !dry {
         tracing::debug!("Creating crate directory at {:?}", project_path_buf);
         std::fs::create_dir_all(&project_path_buf)?;
     }
@@ -54,7 +61,8 @@ pub(crate) fn create(
         .map(|t| t.add_empty_child("main.rs".to_string()));
 
     tree.as_deref_mut().map(|t| t.end_child()); // <- src/
-    tree.map(|t| t.end_child()); // <- <name>/
+    tree.as_deref_mut().map(|t| t.end_child()); // <- <name>/
+    tree.map(|t| t.end_child()); // <- bin/
 
     Ok(())
 }
@@ -75,17 +83,30 @@ mod tests {
         let project_path = bin_path_buf.join(project_name);
         create(&bin_path_buf, project_name, false, None).unwrap();
 
-        // Check that the project directory was created.
         assert!(project_path.exists());
         assert!(project_path.join("src").exists());
         assert!(project_path.join("src").join("main.rs").exists());
         assert!(project_path.join("Cargo.toml").exists());
 
-        // Check that the contents of the main.rs file are correct.
         let mut main_rs = File::open(project_path.join("src").join("main.rs")).unwrap();
         let mut main_rs_contents = String::new();
         main_rs.read_to_string(&mut main_rs_contents).unwrap();
         let expected_contents = "fn main() {\n    println!(\"Hello World!\");\n}\n";
         assert_eq!(main_rs_contents, expected_contents);
+    }
+
+    #[test]
+    fn test_create_dry_run() {
+        let dir = tempdir().unwrap();
+        let dir_path_buf = dir.path().to_path_buf();
+        let bin_path_buf = dir_path_buf.join("bin");
+        let project_name = "example";
+        let project_path = bin_path_buf.join(project_name);
+        create(&bin_path_buf, project_name, true, None).unwrap();
+
+        assert!(!project_path.exists());
+        assert!(!project_path.join("src").exists());
+        assert!(!project_path.join("src").join("main.rs").exists());
+        assert!(!project_path.join("Cargo.toml").exists());
     }
 }
