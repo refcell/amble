@@ -23,7 +23,7 @@
 | [Developer Docs](./docs/developers/developers.md)
 | [Crate Docs](https://crates.io/crates/amble)
 
-_The project is still work in progress, see the [disclaimer below](#status-httpsgithubcomrefcellamblelabelsalpha)._
+_The project is still work in progress, see the [disclaimer below](#status)._
 
 ## What is amble?
 
@@ -53,9 +53,9 @@ cargo build --release
 amble --version
 ```
 
-## Status https://github.com/refcell/amble/labels/alpha
+## Status
 
-`amble` is in **alpha** mode, and should be used for
+`amble` is in https://github.com/refcell/amble/labels/alpha mode, and should be used for
 experimentation only.
 
 Local and devnet experimentation is highly encouraged.
