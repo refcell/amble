@@ -3,9 +3,9 @@ use std::{fs, io};
 fn main() {
     let out_dir = std::env::var("OUT_DIR").unwrap();
 
-    fs::create_dir_all(&format!("{}/templates/bin/", out_dir))
+    fs::create_dir_all(format!("{}/templates/bin/", out_dir))
         .expect("unable to create templates bin directory");
-    fs::create_dir_all(&format!("{}/templates/lib/", out_dir))
+    fs::create_dir_all(format!("{}/templates/lib/", out_dir))
         .expect("unable to create templates lib directory");
 
     copy_content(&out_dir, "templates/bin/Cargo.toml");
@@ -20,9 +20,9 @@ fn copy_content(out: &str, source: &str) {
     let mut out_file = fs::OpenOptions::new()
         .append(true)
         .create(true)
-        .open(&out_path)
+        .open(out_path)
         .expect("unable to open/create data file");
-    if let Ok(mut source_file) = fs::File::open(&source) {
+    if let Ok(mut source_file) = fs::File::open(source) {
         io::copy(&mut source_file, &mut out_file).expect("failed to copy data after opening");
     }
 }

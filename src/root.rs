@@ -21,7 +21,10 @@ pub(crate) fn create(
             dir.join("Cargo.toml")
         );
         let mut cargo_toml = std::fs::File::create(dir.join("Cargo.toml"))?;
-        cargo_toml.write_all(include_bytes!("../templates/Cargo.toml"))?;
+        cargo_toml.write_all(include_bytes!(concat!(
+            env!("OUT_DIR"),
+            "/templates/Cargo.toml"
+        )))?;
     }
     tree.map(|t| t.add_empty_child("Cargo.toml".to_string()));
 

@@ -40,7 +40,10 @@ pub(crate) fn create(
             cargo_toml_path_buf
         );
         let mut cargo_toml = std::fs::File::create(&cargo_toml_path_buf)?;
-        cargo_toml.write_all(include_bytes!("../templates/lib/Cargo.toml"))?;
+        cargo_toml.write_all(include_bytes!(concat!(
+            env!("OUT_DIR"),
+            "/templates/lib/Cargo.toml"
+        )))?;
     }
     tree.as_deref_mut()
         .map(|t| t.add_empty_child("Cargo.toml".to_string()));
@@ -55,7 +58,10 @@ pub(crate) fn create(
     if !dry {
         tracing::debug!("Creating lib.rs file as {:?}", lib_rs_path_buf);
         let mut lib_rs = std::fs::File::create(&lib_rs_path_buf)?;
-        lib_rs.write_all(include_bytes!("../templates/lib/lib.rs"))?;
+        lib_rs.write_all(include_bytes!(concat!(
+            env!("OUT_DIR"),
+            "/templates/lib/lib.rs"
+        )))?;
     }
     tree.as_deref_mut()
         .map(|t| t.add_empty_child("main.rs".to_string()));
