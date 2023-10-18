@@ -1,0 +1,19 @@
+#![doc = include_str!("../README.md")]
+#![doc(
+    html_logo_url = "https://raw.githubusercontent.com/refcell/amble/main/etc/banner.png",
+    html_favicon_url = "",
+    issue_tracker_base_url = "https://github.com/refcell/amble/issues/"
+)]
+#![warn(
+    missing_debug_implementations,
+    missing_docs,
+    unreachable_pub,
+    rustdoc::all
+)]
+#![deny(unused_must_use, rust_2018_idioms)]
+#![cfg_attr(docsrs, feature(doc_cfg, doc_auto_cfg))]
+
+/// The CLI Module
+pub mod cli;
+
+pub(crate) mod telemetry;

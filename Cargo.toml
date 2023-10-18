@@ -1,0 +1,25 @@
+[package]
+name = "amble"
+description = "First class, scalable rust project generator with batteries included."
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["refcell"]
+rust-version = "1.72"
+homepage = "https://github.com/refcell/amble"
+repository = "https://github.com/refcell/amble"
+exclude = ["benches/", "tests/"]
+
+[dependencies]
+eyre = "0.6.8"
+inquire = "0.6.2"
+tracing = "0.1.37"
+tracing-subscriber = "0.3.17"
+clap = { version = "4.4.3", features = ["derive"] }
+
+[profile.dev]
+opt-level = 1
+overflow-checks = false
+
+[profile.bench]
+debug = true
