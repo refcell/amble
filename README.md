@@ -3,15 +3,15 @@
 [![Build Status]][actions]
 [![License]][mit-license]
 [![Latest Version]][crates.io]
-[![amble: rustc 1.31+]][Rust 1.31]
+[![rustc 1.31+]][Rust 1.31]
 
 [Build Status]: https://img.shields.io/github/actions/workflow/status/refcell/amble/ci.yml?branch=main
 [actions]: https://github.com/refcell/amble/actions?query=branch%3Amain
 [Latest Version]: https://img.shields.io/crates/v/amble.svg
 [crates.io]: https://crates.io/crates/amble
-[amble: rustc 1.31+]: https://img.shields.io/badge/amble-rustc_1.31+-lightgray.svg
+[rustc 1.31+]: https://img.shields.io/badge/rustc_1.31+-lightgray.svg
 [Rust 1.31]: https://blog.rust-lang.org/2018/12/06/Rust-1.31-and-rust-2018.html
-[License]: https://img.shields.io/badge/License-MIT-orange.svg
+[License]: https://img.shields.io/badge/license-MIT-orange.svg
 [mit-license]: https://github.com/refcell/amble/blob/main/LICENSE.md
 
 **First class, scalable rust project generator with batteries included.**
