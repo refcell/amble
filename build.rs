@@ -8,14 +8,14 @@ fn main() {
     fs::create_dir_all(&format!("{}/templates/lib/", out_dir))
         .expect("unable to create templates lib directory");
 
-    copy_content(out_dir, "templates/bin/Cargo.toml");
-    copy_content(out_dir, "templates/bin/main.rs");
-    copy_content(out_dir, "templates/lib/Cargo.toml");
-    copy_content(out_dir, "templates/lib/lib.rs");
-    copy_content(out_dir, "templates/Cargo.toml");
+    copy_content(&out_dir, "templates/bin/Cargo.toml");
+    copy_content(&out_dir, "templates/bin/main.rs");
+    copy_content(&out_dir, "templates/lib/Cargo.toml");
+    copy_content(&out_dir, "templates/lib/lib.rs");
+    copy_content(&out_dir, "templates/Cargo.toml");
 }
 
-fn copy_content(out: &Path, source: String) {
+fn copy_content(out: &str, source: &str) {
     let out_path = format!("{}/{}", out, source);
     let mut out_file = fs::OpenOptions::new()
         .append(true)
