@@ -45,11 +45,22 @@ pub(crate) fn try_git_username() -> Option<String> {
     }
 }
 
+/// Returns the current username.
+pub(crate) fn get_current_username(authors: &Option<Vec<String>>) -> String {
+    match authors {
+        Some(v) => v[0].clone(),
+        None => match try_git_username() {
+            Some(name) => name,
+            None => whoami::username().to_string(),
+        },
+    }
+}
+
 /// Dynamically gets the authors.
-pub(crate) fn get_authors(author: Option<Vec<String>>) -> toml_edit::Item {
+pub(crate) fn get_authors(authors: Option<Vec<String>>) -> toml_edit::Item {
     let mut array = toml_edit::Array::default();
-    match author {
-        Some(authors) => authors.into_iter().for_each(|a| array.push(a)),
+    match authors {
+        Some(v) => v.into_iter().for_each(|a| array.push(a)),
         None => match try_git_username() {
             Some(name) => array.push(name),
             None => array.push(whoami::username().to_string()),
@@ -64,7 +75,7 @@ pub(crate) fn fill_cargo(file: &Path, author: Option<Vec<String>>, name: &str) -
 
     manifest["workspace"] = toml_edit::Item::Table(toml_edit::Table::new());
     let mut array = toml_edit::Array::default();
-    array.push(format!("bin/{}", name));
+    array.push("bin/*".to_string());
     array.push("crates/*".to_string());
     manifest["workspace"]["members"] = toml_edit::value(array);
     manifest["workspace"]["resolver"] = toml_edit::value("2");
@@ -74,10 +85,13 @@ pub(crate) fn fill_cargo(file: &Path, author: Option<Vec<String>>, name: &str) -
     manifest["workspace.package"]["description"] = toml_edit::value(format!("{} workspace", name));
     manifest["workspace.package"]["version"] = toml_edit::value("0.1.0");
     manifest["workspace.package"]["edition"] = toml_edit::value("2021");
-    manifest["workspace.package"]["authors"] = get_authors(author);
     manifest["workspace.package"]["license"] = toml_edit::value("MIT");
-    manifest["workspace.package"]["repository"] = toml_edit::value("");
-    manifest["workspace.package"]["homepage"] = toml_edit::value("");
+    let user = get_current_username(&author);
+    manifest["workspace.package"]["authors"] = get_authors(author);
+    manifest["workspace.package"]["repository"] =
+        toml_edit::value(format!("https://github.com/{}/{}", user, name));
+    manifest["workspace.package"]["homepage"] =
+        toml_edit::value(format!("https://github.com/{}/{}", user, name));
     let mut array = toml_edit::Array::default();
     array.push("**/target".to_string());
     array.push("benches/".to_string());
@@ -171,7 +185,7 @@ mod tests {
         let mut cargo_toml_contents = String::new();
         cargo_toml.read_to_string(&mut cargo_toml_contents).unwrap();
         let expected_contents = r#"[workspace]
-members = ["bin/example", "crates/*"]
+members = ["bin/*", "crates/*"]
 resolver = "2"
 
 [workspace.package]
@@ -179,10 +193,10 @@ name = "example"
 description = "example workspace"
 version = "0.1.0"
 edition = "2021"
-authors = ["refcell"]
 license = "MIT"
-repository = ""
-homepage = ""
+authors = ["refcell"]
+repository = "https://github.com/refcell/example"
+homepage = "https://github.com/refcell/example"
 exclude = ["**/target", "benches/", "tests"]
 
 [workspace.dependencies]
