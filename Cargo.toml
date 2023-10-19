@@ -1,7 +1,7 @@
 ["package"]
 name = "amble"
 description = "First class, scalable rust project generator with batteries included."
-version = "0.1.6"
+version = "0.1.7"
 edition = "2021"
 license = "MIT"
 authors = ["refcell"]
@@ -18,6 +18,7 @@ path = "src/main.rs"
 name = "amble"
 
 [dependencies]
+whoami = "1.4.1"
 eyre = "0.6.8"
 ptree = "0.4"
 inquire = "0.6.2"

@@ -35,6 +35,10 @@ pub struct Args {
     #[arg(long, short)]
     ci_yml: Option<String>,
 
+    /// Override the project authors.
+    #[arg(long, short)]
+    authors: Option<Vec<String>>,
+
     /// The path to the project directory.
     /// By default, the current working directory is used.
     /// If any rust artifacts are detected in the specified
@@ -53,15 +57,11 @@ pub fn run() -> Result<()> {
         overwrite,
         with_ci,
         ci_yml,
+        authors,
     } = Args::parse();
+    let project_dir_path = std::path::Path::new(&project_dir);
 
     crate::telemetry::init_tracing_subscriber(v)?;
-
-    let mut builder = TreeBuilder::new(project_dir.clone());
-    let project_dir_path = std::path::Path::new(&project_dir);
-    if !dry_run {
-        std::fs::create_dir_all(project_dir_path)?;
-    }
 
     match overwrite {
         true => {
@@ -87,7 +87,18 @@ pub fn run() -> Result<()> {
         }
     }
 
-    crate::root::create(project_dir_path, &name, dry_run, Some(&mut builder))?;
+    let mut builder = TreeBuilder::new(project_dir.clone());
+    if !dry_run {
+        std::fs::create_dir_all(project_dir_path)?;
+    }
+
+    crate::root::create(
+        project_dir_path,
+        &name,
+        dry_run,
+        authors,
+        Some(&mut builder),
+    )?;
     crate::bins::create(
         &project_dir_path.join("bin"),
         &name,
