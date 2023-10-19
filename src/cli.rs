@@ -3,16 +3,16 @@ use eyre::Result;
 use inquire::Confirm;
 use ptree::TreeBuilder;
 
-/// Command line arguments
+/// Command line arguments.
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
     /// Verbosity level (0-4).
-    #[arg(long, short, action = ArgAction::Count, default_value = "1")]
+    #[arg(long, short, action = ArgAction::Count, default_value = "0")]
     v: u8,
 
     /// Dry run mode.
-    /// If this flag is provided, the cli will no execute commands,
+    /// If this flag is provided, the cli will not execute commands,
     /// printing the directories and files that would be created instead.
     #[arg(long)]
     dry_run: bool,
@@ -26,6 +26,14 @@ pub struct Args {
     /// This will be used for the binary application name.
     #[arg(long, short, default_value = "example")]
     name: String,
+
+    /// Add github actions ci workflow.
+    #[arg(long, short)]
+    with_ci: bool,
+
+    /// Copy the specified ci workflow file to the project's `.github/workflows/` directory.
+    #[arg(long, short)]
+    ci_yml: Option<String>,
 
     /// The path to the project directory.
     /// By default, the current working directory is used.
@@ -43,6 +51,8 @@ pub fn run() -> Result<()> {
         name,
         project_dir,
         overwrite,
+        with_ci,
+        ci_yml,
     } = Args::parse();
 
     crate::telemetry::init_tracing_subscriber(v)?;
@@ -90,6 +100,10 @@ pub fn run() -> Result<()> {
         dry_run,
         Some(&mut builder),
     )?;
+
+    if with_ci || ci_yml.is_some() {
+        crate::ci::create(project_dir_path, dry_run, ci_yml, Some(&mut builder))?;
+    }
 
     if dry_run {
         let tree = builder.build();
