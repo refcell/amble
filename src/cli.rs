@@ -25,8 +25,8 @@ pub struct Args {
     /// By default, the current working directory is used.
     /// If any rust artifacts are detected in the specified
     /// or unspecified directory, an error will be thrown.
-    #[arg(long, short, default_value = ".")]
-    dir: String,
+    #[arg(default_value = ".")]
+    project_dir: String,
 }
 
 /// CLI Entrypoint.
@@ -35,14 +35,16 @@ pub fn run() -> Result<()> {
         v,
         dry_run,
         name,
-        dir,
+        project_dir,
     } = Args::parse();
 
     crate::telemetry::init_tracing_subscriber(v)?;
 
-    let mut builder = TreeBuilder::new(dir.clone());
-    let project_dir_path = std::path::Path::new(&dir);
-    std::fs::create_dir_all(project_dir_path)?;
+    let mut builder = TreeBuilder::new(project_dir.clone());
+    let project_dir_path = std::path::Path::new(&project_dir);
+    if !dry_run {
+        std::fs::create_dir_all(project_dir_path)?;
+    }
 
     crate::utils::check_artifacts(project_dir_path, dry_run)?;
 
