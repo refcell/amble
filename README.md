@@ -23,7 +23,7 @@
 ![](./etc/banner.png)
 
 **[Install](#usage)**
-| [User Docs](#what-is-amble?)
+| [User Docs](#what-is-amble)
 | [Crate Docs][crates.io]
 | [Reference][Docs-rs]
 | [Contributing](#contributing)
