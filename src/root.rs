@@ -88,6 +88,8 @@ pub(crate) fn fill_cargo(file: &Path, author: Option<Vec<String>>, name: &str) -
     manifest["workspace.dependencies"]["eyre"] = toml_edit::value("0.6.8");
     manifest["workspace.dependencies"]["inquire"] = toml_edit::value("0.6.2");
     manifest["workspace.dependencies"]["tracing"] = toml_edit::value("0.1.39");
+    manifest["workspace.dependencies"]["serde"] = toml_edit::value("1.0.189");
+    manifest["workspace.dependencies"]["serde_json"] = toml_edit::value("1.0.107");
     manifest["workspace.dependencies"]["tracing-subscriber"] = toml_edit::value("0.3.17");
     manifest["workspace.dependencies"]["clap"] =
         toml_edit::Item::Value(toml_edit::Value::InlineTable(toml_edit::InlineTable::new()));
@@ -103,10 +105,21 @@ pub(crate) fn fill_cargo(file: &Path, author: Option<Vec<String>>, name: &str) -
     manifest["profile.bench"] = toml_edit::Item::Table(toml_edit::Table::new());
     manifest["profile.bench"]["debug"] = toml_edit::value(true);
 
-    // Write the manifest to the file.
+    // Remove quotes inside toml table keys.
+    // And write the manifest to the Cargo TOML file.
     let mut file = std::fs::File::create(file)?;
-    file.write_all(manifest.to_string().as_bytes())?;
+    let manifest_string = remove_table_quotes(manifest.to_string());
+    file.write_all(manifest_string.as_bytes())?;
+
     Ok(())
+}
+
+/// Removes quotes from table keys.
+/// e.g. ["workspace.package"] -> [workspace.package"]
+pub(crate) fn remove_table_quotes(s: String) -> String {
+    let re = regex::Regex::new(r#"\["(.*\..*)"\]"#).unwrap_or_else(|_| panic!("Invalid regex"));
+    let result = re.replace_all(&s, |caps: &regex::Captures<'_>| format!("[{}]", &caps[1]));
+    result.to_string()
 }
 
 #[cfg(test)]
@@ -115,6 +128,29 @@ mod tests {
     use std::fs::File;
     use std::io::Read;
     use tempfile::tempdir;
+
+    #[test]
+    fn test_remove_table_quotes() {
+        let s = r#"[workspace.package]"#;
+        let expected = r#"[workspace.package]"#;
+        assert_eq!(remove_table_quotes(s.to_string()), expected);
+
+        let s = r#"["workspace.package"]"#;
+        let expected = r#"[workspace.package]"#;
+        assert_eq!(remove_table_quotes(s.to_string()), expected);
+
+        let s = r#"["refcell"]"#;
+        let expected = r#"["refcell"]"#;
+        assert_eq!(remove_table_quotes(s.to_string()), expected);
+
+        let s = r#"["**/target", "benches/", "tests"]"#;
+        let expected = r#"["**/target", "benches/", "tests"]"#;
+        assert_eq!(remove_table_quotes(s.to_string()), expected);
+
+        let s = r#"["workspace.package.inside"]"#;
+        let expected = r#"[workspace.package.inside]"#;
+        assert_eq!(remove_table_quotes(s.to_string()), expected);
+    }
 
     #[test]
     fn test_fill_cargo() {
@@ -138,7 +174,7 @@ mod tests {
 members = ["bin/example", "crates/*"]
 resolver = "2"
 
-["workspace.package"]
+[workspace.package]
 name = "example"
 description = "example workspace"
 version = "0.1.0"
@@ -149,18 +185,20 @@ repository = ""
 homepage = ""
 exclude = ["**/target", "benches/", "tests"]
 
-["workspace.dependencies"]
+[workspace.dependencies]
 eyre = "0.6.8"
 inquire = "0.6.2"
 tracing = "0.1.39"
+serde = "1.0.189"
+serde_json = "1.0.107"
 tracing-subscriber = "0.3.17"
 clap = { version = "4.4.3", features = ["derive"] }
 
-["profile.dev"]
+[profile.dev]
 opt-level = 1
 overflow-checks = false
 
-["profile.bench"]
+[profile.bench]
 debug = true
 "#;
         assert_eq!(cargo_toml_contents, expected_contents);

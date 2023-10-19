@@ -18,6 +18,7 @@ pub(crate) fn create(
     let lib_path_buf = dir.join(name.as_ref());
     let src_path_buf = lib_path_buf.join("src");
     let cargo_toml_path_buf = lib_path_buf.join("Cargo.toml");
+    let readme_path_buf = lib_path_buf.join("README.md");
     let lib_rs_path_buf = lib_path_buf.join("src").join("lib.rs");
 
     if !dry {
@@ -42,6 +43,13 @@ pub(crate) fn create(
         .map(|t| t.add_empty_child("Cargo.toml".to_string()));
 
     if !dry {
+        tracing::debug!("Writing {:?}", readme_path_buf);
+        std::fs::write(&readme_path_buf, format!("# {}", name.as_ref()))?;
+    }
+    tree.as_deref_mut()
+        .map(|t| t.add_empty_child("README.md".to_string()));
+
+    if !dry {
         tracing::debug!("Creating {:?} directory", src_path_buf);
         std::fs::create_dir_all(&src_path_buf)?;
     }
@@ -60,10 +68,21 @@ pub(crate) fn create(
 #![deny(unused_must_use, rust_2018_idioms)]
 #![cfg_attr(docsrs, feature(doc_cfg, doc_auto_cfg))]
 
-mod placeholder {
-    struct Placeholder;
+/// Adds two [usize] numbers together.
+pub fn add(left: usize, right: usize) -> usize {
+    left + right
 }
-        "#;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        let result = add(2, 2);
+        assert_eq!(result, 4);
+    }
+}"#;
         let mut lib_rs = std::fs::File::create(&lib_rs_path_buf)?;
         lib_rs.write_all(lib_contents.as_bytes())?;
     }
@@ -166,6 +185,7 @@ tracing = { workspace = true }
         assert!(project_path.join("src").exists());
         assert!(project_path.join("src").join("lib.rs").exists());
         assert!(project_path.join("Cargo.toml").exists());
+        assert!(project_path.join("README.md").exists());
 
         let mut lib_rs = File::open(project_path.join("src").join("lib.rs")).unwrap();
         let mut lib_rs_contents = String::new();
@@ -186,5 +206,6 @@ tracing = { workspace = true }
         assert!(!project_path.join("src").exists());
         assert!(!project_path.join("src").join("lib.rs").exists());
         assert!(!project_path.join("Cargo.toml").exists());
+        assert!(!project_path.join("README.md").exists());
     }
 }
