@@ -1,5 +1,6 @@
 use clap::{ArgAction, Parser};
 use eyre::Result;
+use inquire::Confirm;
 use ptree::TreeBuilder;
 
 /// Command line arguments
@@ -7,7 +8,7 @@ use ptree::TreeBuilder;
 #[command(author, version, about, long_about = None)]
 pub struct Args {
     /// Verbosity level (0-4).
-    #[arg(long, short, action = ArgAction::Count, default_value = "2")]
+    #[arg(long, short, action = ArgAction::Count, default_value = "1")]
     v: u8,
 
     /// Dry run mode.
@@ -15,6 +16,11 @@ pub struct Args {
     /// printing the directories and files that would be created instead.
     #[arg(long)]
     dry_run: bool,
+
+    /// Overwrite existing files.
+    /// If this flag is provided, the cli will overwrite existing files.
+    #[arg(long)]
+    overwrite: bool,
 
     /// The project name.
     /// This will be used for the binary application name.
@@ -36,6 +42,7 @@ pub fn run() -> Result<()> {
         dry_run,
         name,
         project_dir,
+        overwrite,
     } = Args::parse();
 
     crate::telemetry::init_tracing_subscriber(v)?;
@@ -46,7 +53,29 @@ pub fn run() -> Result<()> {
         std::fs::create_dir_all(project_dir_path)?;
     }
 
-    crate::utils::check_artifacts(project_dir_path, dry_run)?;
+    match overwrite {
+        true => {
+            tracing::warn!("Overwrite flag is set, existing files will be overwritten");
+            if !Confirm::new("[WARNING] Overwrite mode will overwrite any conflicting files and directories. Are you sure you wish to proceed?").prompt()? {
+                println!("Phew, close call... aborting");
+                return Ok(());
+            }
+        }
+        false => crate::utils::check_artifacts(project_dir_path, dry_run)?,
+    }
+
+    // we don't need to prompt the user twice if overwrite mode is enabled
+    if !dry_run && !overwrite {
+        tracing::warn!("Running in non-dry run mode.");
+        tracing::warn!("Files and directories will be created.");
+        tracing::warn!("This action may be destructive.");
+        if !Confirm::new("Running amble in non-dry mode, are you sure you wish to proceed?")
+            .prompt()?
+        {
+            println!("Phew, close call... aborting");
+            return Ok(());
+        }
+    }
 
     crate::root::create(project_dir_path, &name, dry_run, Some(&mut builder))?;
     crate::bins::create(
