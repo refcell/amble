@@ -69,6 +69,27 @@ pub(crate) fn get_authors(authors: Option<Vec<String>>) -> toml_edit::Item {
     toml_edit::value(array)
 }
 
+/// Fetch a packages version using bash commands and `cargo search`.
+pub(crate) fn fetch_version(c: &str) -> Option<String> {
+    let cargo_search_output = std::process::Command::new("cargo")
+        .arg("search")
+        .arg(c)
+        .output()
+        .ok()?;
+    if !cargo_search_output.status.success() {
+        tracing::warn!("Failed to run `cargo search {}` command", c);
+        return None;
+    }
+    let output_str = String::from_utf8(cargo_search_output.stdout).ok()?;
+    let eyre_line = output_str
+        .lines()
+        .find(|l| l.starts_with(&format!("{} = ", c)))?;
+    let version = eyre_line
+        .strip_prefix(&format!("{} = \"", c))
+        .and_then(|s| s.split('"').next());
+    version.map(|s| s.to_string())
+}
+
 /// Writes binary contents to the `Cargo.toml` file located at [file].
 pub(crate) fn fill_cargo(file: &Path, author: Option<Vec<String>>, name: &str) -> Result<()> {
     let mut manifest = toml_edit::Document::new();
@@ -99,15 +120,22 @@ pub(crate) fn fill_cargo(file: &Path, author: Option<Vec<String>>, name: &str) -
     manifest["workspace.package"]["exclude"] = toml_edit::value(array);
 
     manifest["workspace.dependencies"] = toml_edit::Item::Table(toml_edit::Table::new());
-    manifest["workspace.dependencies"]["eyre"] = toml_edit::value("0.6.8");
-    manifest["workspace.dependencies"]["inquire"] = toml_edit::value("0.6.2");
-    manifest["workspace.dependencies"]["tracing"] = toml_edit::value("0.1.39");
-    manifest["workspace.dependencies"]["serde"] = toml_edit::value("1.0.189");
-    manifest["workspace.dependencies"]["serde_json"] = toml_edit::value("1.0.107");
-    manifest["workspace.dependencies"]["tracing-subscriber"] = toml_edit::value("0.3.17");
+    let version = fetch_version("eyre").unwrap_or_else(|| "0.6.8".to_string());
+    manifest["workspace.dependencies"]["eyre"] = toml_edit::value(version);
+    let version = fetch_version("inquire").unwrap_or_else(|| "0.6.2".to_string());
+    manifest["workspace.dependencies"]["inquire"] = toml_edit::value(version);
+    let version = fetch_version("tracing").unwrap_or_else(|| "0.1.39".to_string());
+    manifest["workspace.dependencies"]["tracing"] = toml_edit::value(version);
+    let version = fetch_version("serde").unwrap_or_else(|| "1.0.189".to_string());
+    manifest["workspace.dependencies"]["serde"] = toml_edit::value(version);
+    let version = fetch_version("serde_json").unwrap_or_else(|| "1.0.107".to_string());
+    manifest["workspace.dependencies"]["serde_json"] = toml_edit::value(version);
+    let version = fetch_version("tracing-subscriber").unwrap_or_else(|| "0.3.17".to_string());
+    manifest["workspace.dependencies"]["tracing-subscriber"] = toml_edit::value(version);
     manifest["workspace.dependencies"]["clap"] =
         toml_edit::Item::Value(toml_edit::Value::InlineTable(toml_edit::InlineTable::new()));
-    manifest["workspace.dependencies"]["clap"]["version"] = toml_edit::value("4.4.3");
+    let version = fetch_version("clap").unwrap_or_else(|| "4.4.3".to_string());
+    manifest["workspace.dependencies"]["clap"]["version"] = toml_edit::value(version);
     let mut array = toml_edit::Array::default();
     array.push("derive".to_string());
     manifest["workspace.dependencies"]["clap"]["features"] = toml_edit::value(array);
@@ -142,6 +170,16 @@ mod tests {
     use std::fs::File;
     use std::io::Read;
     use tempfile::tempdir;
+
+    #[test]
+    fn test_fetch_version() {
+        let version = fetch_version("eyre").unwrap();
+        let expected = semver::Version::parse("0.6.8").unwrap();
+        let semversion = semver::Version::parse(&version).unwrap();
+        // expect as greater than or equal to the expected version
+        //
+        assert!(semversion.gt(&expected) || semversion.eq(&expected));
+    }
 
     #[test]
     fn test_remove_table_quotes() {
@@ -184,7 +222,17 @@ mod tests {
         let mut cargo_toml = File::open(cargo_toml_path_buf).unwrap();
         let mut cargo_toml_contents = String::new();
         cargo_toml.read_to_string(&mut cargo_toml_contents).unwrap();
-        let expected_contents = r#"[workspace]
+        let eyre_version = fetch_version("eyre").unwrap_or_else(|| "0.6.8".to_string());
+        let inquire_version = fetch_version("inquire").unwrap_or_else(|| "0.6.2".to_string());
+        let tracing_version = fetch_version("tracing").unwrap_or_else(|| "0.1.39".to_string());
+        let serde_version = fetch_version("serde").unwrap_or_else(|| "1.0.189".to_string());
+        let serde_json_version =
+            fetch_version("serde_json").unwrap_or_else(|| "1.0.107".to_string());
+        let tracing_subscriber_version =
+            fetch_version("tracing-subscriber").unwrap_or_else(|| "0.3.17".to_string());
+        let clap_version = fetch_version("clap").unwrap_or_else(|| "4.4.3".to_string());
+        let expected_contents = format!(
+            r#"[workspace]
 members = ["bin/*", "crates/*"]
 resolver = "2"
 
@@ -200,13 +248,13 @@ homepage = "https://github.com/refcell/example"
 exclude = ["**/target", "benches/", "tests"]
 
 [workspace.dependencies]
-eyre = "0.6.8"
-inquire = "0.6.2"
-tracing = "0.1.39"
-serde = "1.0.189"
-serde_json = "1.0.107"
-tracing-subscriber = "0.3.17"
-clap = { version = "4.4.3", features = ["derive"] }
+eyre = "{}"
+inquire = "{}"
+tracing = "{}"
+serde = "{}"
+serde_json = "{}"
+tracing-subscriber = "{}"
+clap = {{ version = "{}", features = ["derive"] }}
 
 [profile.dev]
 opt-level = 1
@@ -214,7 +262,15 @@ overflow-checks = false
 
 [profile.bench]
 debug = true
-"#;
+"#,
+            eyre_version,
+            inquire_version,
+            tracing_version,
+            serde_version,
+            serde_json_version,
+            tracing_subscriber_version,
+            clap_version
+        );
         assert_eq!(cargo_toml_contents, expected_contents);
     }
 
