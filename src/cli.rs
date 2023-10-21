@@ -47,9 +47,16 @@ pub struct Args {
     #[arg(long, short)]
     lib: bool,
 
-    /// License override.
+    /// Adds an MIT License to the project.
+    /// The MIT License type can be overridden with the `--with-license` flag.
     #[arg(long)]
-    license: Option<String>,
+    license: bool,
+
+    /// License Override.
+    /// This will override the default MIT License.
+    /// The license type must be a valid SPDX license identifier.
+    #[arg(long)]
+    with_license: Option<String>,
 
     /// The path to the project directory.
     /// By default, the current working directory is used.
@@ -73,6 +80,7 @@ pub fn run() -> Result<()> {
         bin,
         lib,
         license,
+        with_license,
     } = Args::parse();
     let project_dir_path = std::path::Path::new(&project_dir);
     let mut overwrite = overwrite;
@@ -111,8 +119,10 @@ pub fn run() -> Result<()> {
         std::fs::create_dir_all(project_dir_path)?;
     }
 
-    let license = license.unwrap_or("mit".to_string());
-    crate::license::create(project_dir_path, license, dry_run, Some(&mut builder))?;
+    if license || with_license.is_some() {
+        let license_type = with_license.as_deref().unwrap_or("mit");
+        crate::license::create(project_dir_path, license_type, dry_run, Some(&mut builder))?;
+    }
 
     if !bin && !lib {
         crate::root::create(

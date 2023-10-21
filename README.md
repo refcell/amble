@@ -159,18 +159,19 @@ Arguments:
   [PROJECT_DIR]  The path to the project directory. By default, the current working directory is used. If any rust artifacts are detected in the specified or unspecified directory, an error will be thrown [default: .]
 
 Options:
-  -v, --v...               Verbosity level (0-4)
-      --dry-run            Dry run mode. If this flag is provided, the cli will not execute commands, printing the directories and files that would be created instead
-      --overwrite          Overwrite existing files. If this flag is provided, the cli will overwrite existing files
-  -n, --name <NAME>        The project name. This will be used for the binary application name [default: example]
-  -w, --with-ci            Add github actions ci workflow
-  -c, --ci-yml <CI_YML>    Copy the specified ci workflow file to the project's `.github/workflows/` directory
-  -a, --authors <AUTHORS>  Override the project authors
-  -b, --bin                Builds a cargo binary project
-  -l, --lib                Builds a cargo library project
-      --license <LICENSE>  License override
-  -h, --help               Print help
-  -V, --version            Print version
+  -v, --v...                         Verbosity level (0-4)
+      --dry-run                      Dry run mode. If this flag is provided, the cli will not execute commands, printing the directories and files that would be created instead
+      --overwrite                    Overwrite existing files. If this flag is provided, the cli will overwrite existing files
+  -n, --name <NAME>                  The project name. This will be used for the binary application name [default: example]
+  -w, --with-ci                      Add github actions ci workflow
+  -c, --ci-yml <CI_YML>              Copy the specified ci workflow file to the project's `.github/workflows/` directory
+  -a, --authors <AUTHORS>            Override the project authors
+  -b, --bin                          Builds a cargo binary project
+  -l, --lib                          Builds a cargo library project
+      --license                      Adds an MIT License to the project. The MIT License type can be overridden with the `--with-license` flag
+      --with-license <WITH_LICENSE>  License Override. This will override the default MIT License. The license type must be a valid SPDX license identifier
+  -h, --help                         Print help
+  -V, --version                      Print version
 ```
 
 *You can generate this output by running `amble --help`.*
