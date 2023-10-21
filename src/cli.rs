@@ -56,6 +56,10 @@ pub struct Args {
     #[arg(long)]
     license: bool,
 
+    /// Adds a Gitignore file to the project.
+    #[arg(long)]
+    gitignore: bool,
+
     /// License Override.
     /// This will override the default MIT License.
     /// The license type must be a valid SPDX license identifier.
@@ -85,6 +89,7 @@ pub fn run() -> Result<()> {
         lib,
         mut license,
         with_license,
+        mut gitignore,
         full,
     } = Args::parse();
     let project_dir_path = std::path::Path::new(&project_dir);
@@ -92,6 +97,7 @@ pub fn run() -> Result<()> {
     if full {
         with_ci = true;
         license = true;
+        gitignore = true;
     }
 
     crate::telemetry::init_tracing_subscriber(v)?;
@@ -131,6 +137,10 @@ pub fn run() -> Result<()> {
     if license || with_license.is_some() {
         let license_type = with_license.as_deref().unwrap_or("mit");
         crate::license::create(project_dir_path, license_type, dry_run, Some(&mut builder))?;
+    }
+
+    if gitignore {
+        crate::gitignore::create(project_dir_path, dry_run, Some(&mut builder))?;
     }
 
     if !bin && !lib {

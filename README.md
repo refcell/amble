@@ -170,6 +170,7 @@ Options:
   -l, --lib                          Builds a cargo library project
       --full                         Full generates a full project structure including license, ci, gitignore, etc
       --license                      Adds an MIT License to the project. The MIT License type can be overridden with the `--with-license` flag
+      --gitignore                    Adds a Gitignore file to the project
       --with-license <WITH_LICENSE>  License Override. This will override the default MIT License. The license type must be a valid SPDX license identifier
   -h, --help                         Print help
   -V, --version                      Print version
