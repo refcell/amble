@@ -47,6 +47,10 @@ pub struct Args {
     #[arg(long, short)]
     lib: bool,
 
+    /// Full generates a full project structure including license, ci, gitignore, etc.
+    #[arg(long)]
+    full: bool,
+
     /// Adds an MIT License to the project.
     /// The MIT License type can be overridden with the `--with-license` flag.
     #[arg(long)]
@@ -73,17 +77,22 @@ pub fn run() -> Result<()> {
         dry_run,
         name,
         project_dir,
-        overwrite,
-        with_ci,
+        mut overwrite,
+        mut with_ci,
         ci_yml,
         authors,
         bin,
         lib,
-        license,
+        mut license,
         with_license,
+        full,
     } = Args::parse();
     let project_dir_path = std::path::Path::new(&project_dir);
-    let mut overwrite = overwrite;
+
+    if full {
+        with_ci = true;
+        license = true;
+    }
 
     crate::telemetry::init_tracing_subscriber(v)?;
 
