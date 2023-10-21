@@ -168,6 +168,7 @@ Options:
   -a, --authors <AUTHORS>            Override the project authors
   -b, --bin                          Builds a cargo binary project
   -l, --lib                          Builds a cargo library project
+      --full                         Full generates a full project structure including license, ci, gitignore, etc
       --license                      Adds an MIT License to the project. The MIT License type can be overridden with the `--with-license` flag
       --with-license <WITH_LICENSE>  License Override. This will override the default MIT License. The license type must be a valid SPDX license identifier
   -h, --help                         Print help
