@@ -111,6 +111,9 @@ pub fn run() -> Result<()> {
         std::fs::create_dir_all(project_dir_path)?;
     }
 
+    let license = license.unwrap_or("mit".to_string());
+    crate::license::create(project_dir_path, license, dry_run, Some(&mut builder))?;
+
     if !bin && !lib {
         crate::root::create(
             project_dir_path,
@@ -136,9 +139,6 @@ pub fn run() -> Result<()> {
     } else if lib {
         crate::cargo::create_lib(project_dir_path, dry_run, Some(&mut builder))?;
     }
-
-    let license = license.unwrap_or("mit".to_string());
-    crate::license::create(project_dir_path, license, dry_run, Some(&mut builder))?;
 
     if with_ci || ci_yml.is_some() {
         crate::ci::create(project_dir_path, dry_run, ci_yml, Some(&mut builder))?;

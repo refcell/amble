@@ -5,6 +5,27 @@ use std::io::Write;
 use std::path::Path;
 use tracing::instrument;
 
+/// The MIT License.
+pub(crate) const MIT_LICENSE: &str = "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n";
+
+/// Builds the contents of the license file, performing template substitutions.
+#[instrument(name = "license", skip(license))]
+pub(crate) fn build(license: impl AsRef<str>) -> String {
+    tracing::debug!("Building license file contents");
+    #[allow(clippy::match_single_binding)]
+    match license.as_ref() {
+        // Default to the MIT License
+        // todo: Add support for other licenses.
+        _ => {
+            // Replace the `[year]` and `[fullname]` placeholders with the current year and the
+            // current user's full name.
+            MIT_LICENSE
+                .replace("[year]", &chrono::Utc::now().year().to_string())
+                .replace("[fullname]", &crate::root::get_current_username(&None))
+        }
+    }
+}
+
 /// Creates a new license file in the given directory.
 #[instrument(name = "license", skip(dir, license, dry, tree))]
 pub(crate) fn create(
@@ -14,6 +35,12 @@ pub(crate) fn create(
     tree: Option<&mut TreeBuilder>,
 ) -> Result<()> {
     tracing::info!("Creating license file");
+
+    // Create the directory if it doesn't exist.
+    if !dry {
+        tracing::debug!("Creating directory {:?}", dir);
+        std::fs::create_dir_all(dir)?;
+    }
 
     // Prompt the user that the license is not supported
     // and to fall back on the MIT license.
@@ -29,37 +56,11 @@ pub(crate) fn create(
         }
     }
 
-    let mit_license = "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n";
     if !dry {
-        // Replace the `[year]` and `[fullname]` placeholders with the current year and the
-        // current user's full name.
-        let mit_license = mit_license
-            .replace("[year]", &chrono::Utc::now().year().to_string())
-            .replace("[fullname]", &whoami::realname());
         tracing::debug!("Writing MIT license to {:?}", dir.join("LICENSE"));
         let mut file = std::fs::File::create(dir.join("LICENSE"))?;
-        file.write_all(mit_license.as_bytes())?;
+        file.write_all(build("mit").as_bytes())?;
     }
-
-    // We can't do this dynamic fetching since the github rest api
-    // requires a token.
-
-    // Fetch the MIT license from the github api.
-    // Block the runtime on the license fetching
-    // operation.
-    // let runtime = tokio::runtime::Builder::new_multi_thread()
-    //     .enable_all()
-    //     .thread_stack_size(8 * 1024 * 1024)
-    //     .build()?;
-    // let license_name = name.as_ref().to_string();
-    // let license = runtime.block_on(fetch_with_fallback(license_name))?;
-
-    // if !dry {
-    //     // write the license to the LICENSE file in the project directory.
-    //     tracing::debug!("Writing license to {:?}", dir.join("LICENSE"));
-    //     let mut file = std::fs::File::create(dir.join("LICENSE"))?;
-    //     file.write_all(license.as_bytes())?;
-    // }
 
     tree.map(|t| t.add_empty_child("LICENSE".to_string()));
     Ok(())
@@ -105,13 +106,26 @@ pub async fn fetch_license(name: impl AsRef<str>) -> Result<String> {
     Ok(license)
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//
-//     #[test]
-//     fn test_fetch_license() {
-//         let license = fetch_license("mit").unwrap();
-//         assert!(license.contains("MIT License"));
-//     }
-// }
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::File;
+    use std::io::Read;
+    use tempfile::tempdir;
+
+    #[test]
+    fn test_create_license() {
+        let dir = tempdir().unwrap();
+        let dir_path_buf = dir.path().to_path_buf();
+        let package_dir = dir_path_buf.join("example");
+        create(&package_dir, "mit", false, None).unwrap();
+
+        assert!(package_dir.exists());
+        assert!(package_dir.join("LICENSE").exists());
+
+        let mut file = File::open(package_dir.join("LICENSE")).unwrap();
+        let mut contents = String::new();
+        file.read_to_string(&mut contents).unwrap();
+        assert_eq!(contents, build("mit"));
+    }
+}
