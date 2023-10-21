@@ -13,6 +13,7 @@ pub(crate) fn create(
     description: Option<impl AsRef<str> + std::fmt::Display>,
     dry: bool,
     author: Option<Vec<String>>,
+    overrides: Option<Vec<String>>,
     tree: Option<&mut TreeBuilder>,
 ) -> Result<()> {
     tracing::info!("Creating top level workspace artifacts for {}", name);
@@ -22,7 +23,13 @@ pub(crate) fn create(
         let description = description
             .map(|s| s.as_ref().to_string())
             .unwrap_or(format!("{} workspace", name));
-        fill_cargo(&dir.join("Cargo.toml"), author, name.as_ref(), &description)?;
+        fill_cargo(
+            &dir.join("Cargo.toml"),
+            author,
+            name.as_ref(),
+            &description,
+            overrides,
+        )?;
     }
     tree.map(|t| t.add_empty_child("Cargo.toml".to_string()));
 
@@ -100,6 +107,7 @@ pub(crate) fn fill_cargo(
     author: Option<Vec<String>>,
     name: &str,
     description: &str,
+    overrides: Option<Vec<String>>,
 ) -> Result<()> {
     let mut manifest = toml_edit::Document::new();
 
@@ -128,26 +136,7 @@ pub(crate) fn fill_cargo(
     array.push("tests".to_string());
     manifest["workspace.package"]["exclude"] = toml_edit::value(array);
 
-    manifest["workspace.dependencies"] = toml_edit::Item::Table(toml_edit::Table::new());
-    let version = fetch_version("eyre").unwrap_or_else(|| "0.6.8".to_string());
-    manifest["workspace.dependencies"]["eyre"] = toml_edit::value(version);
-    let version = fetch_version("inquire").unwrap_or_else(|| "0.6.2".to_string());
-    manifest["workspace.dependencies"]["inquire"] = toml_edit::value(version);
-    let version = fetch_version("tracing").unwrap_or_else(|| "0.1.39".to_string());
-    manifest["workspace.dependencies"]["tracing"] = toml_edit::value(version);
-    let version = fetch_version("serde").unwrap_or_else(|| "1.0.189".to_string());
-    manifest["workspace.dependencies"]["serde"] = toml_edit::value(version);
-    let version = fetch_version("serde_json").unwrap_or_else(|| "1.0.107".to_string());
-    manifest["workspace.dependencies"]["serde_json"] = toml_edit::value(version);
-    let version = fetch_version("tracing-subscriber").unwrap_or_else(|| "0.3.17".to_string());
-    manifest["workspace.dependencies"]["tracing-subscriber"] = toml_edit::value(version);
-    manifest["workspace.dependencies"]["clap"] =
-        toml_edit::Item::Value(toml_edit::Value::InlineTable(toml_edit::InlineTable::new()));
-    let version = fetch_version("clap").unwrap_or_else(|| "4.4.3".to_string());
-    manifest["workspace.dependencies"]["clap"]["version"] = toml_edit::value(version);
-    let mut array = toml_edit::Array::default();
-    array.push("derive".to_string());
-    manifest["workspace.dependencies"]["clap"]["features"] = toml_edit::value(array);
+    add_workspace_deps(&mut manifest, overrides);
 
     manifest["profile.dev"] = toml_edit::Item::Table(toml_edit::Table::new());
     manifest["profile.dev"]["opt-level"] = toml_edit::value(1);
@@ -163,6 +152,88 @@ pub(crate) fn fill_cargo(
     file.write_all(manifest_string.as_bytes())?;
 
     Ok(())
+}
+
+/// Lists the default dependencies.
+pub(crate) fn list_dependencies() -> Result<()> {
+    let mut table = prettytable::Table::new();
+    table.add_row(prettytable::Row::new(vec![
+        prettytable::Cell::new("Dependency"),
+        prettytable::Cell::new("Version"),
+    ]));
+    table.add_row(prettytable::Row::new(vec![
+        prettytable::Cell::new("eyre"),
+        prettytable::Cell::new("0.6.8"),
+    ]));
+    table.add_row(prettytable::Row::new(vec![
+        prettytable::Cell::new("inquire"),
+        prettytable::Cell::new("0.6.2"),
+    ]));
+    table.add_row(prettytable::Row::new(vec![
+        prettytable::Cell::new("tracing"),
+        prettytable::Cell::new("0.1.39"),
+    ]));
+    table.add_row(prettytable::Row::new(vec![
+        prettytable::Cell::new("serde"),
+        prettytable::Cell::new("1.0.189"),
+    ]));
+    table.add_row(prettytable::Row::new(vec![
+        prettytable::Cell::new("serde_json"),
+        prettytable::Cell::new("1.0.107"),
+    ]));
+    table.add_row(prettytable::Row::new(vec![
+        prettytable::Cell::new("tracing-subscriber"),
+        prettytable::Cell::new("0.3.17"),
+    ]));
+    table.add_row(prettytable::Row::new(vec![
+        prettytable::Cell::new("clap"),
+        prettytable::Cell::new("4.4.3"),
+    ]));
+    table.printstd();
+    Ok(())
+}
+
+/// Add dependencies to the manifest.
+pub(crate) fn add_workspace_deps(
+    manifest: &mut toml_edit::Document,
+    overrides: Option<Vec<String>>,
+) {
+    let default_inline_dependencies = vec![
+        ("eyre".to_string(), "0.6.8".to_string()),
+        ("inquire".to_string(), "0.6.2".to_string()),
+        ("tracing".to_string(), "0.1.39".to_string()),
+        ("serde".to_string(), "1.0.189".to_string()),
+        ("serde_json".to_string(), "1.0.107".to_string()),
+        ("tracing-subscriber".to_string(), "0.3.17".to_string()),
+        ("clap".to_string(), "4.4.3".to_string()),
+    ];
+    let combined = match overrides {
+        Some(v) => {
+            let mut combined = default_inline_dependencies;
+            let override_deps = v.into_iter().map(|s| (s, "0.0.0".to_string()));
+            combined.extend(override_deps);
+            combined
+        }
+        None => default_inline_dependencies,
+    };
+    manifest["workspace.dependencies"] = toml_edit::Item::Table(toml_edit::Table::new());
+    add_inline_deps(manifest, combined);
+    manifest["workspace.dependencies"]["clap"] =
+        toml_edit::Item::Value(toml_edit::Value::InlineTable(toml_edit::InlineTable::new()));
+    let version = fetch_version("clap").unwrap_or_else(|| "4.4.3".to_string());
+    manifest["workspace.dependencies"]["clap"]["version"] = toml_edit::value(version);
+    let mut array = toml_edit::Array::default();
+    array.push("derive".to_string());
+    manifest["workspace.dependencies"]["clap"]["features"] = toml_edit::value(array);
+}
+
+/// Adds inline dependencies to the manifest.
+pub(crate) fn add_inline_deps(manifest: &mut toml_edit::Document, deps: Vec<(String, String)>) {
+    let deps_table = manifest["workspace.dependencies"].as_table_mut().unwrap();
+    for (dep, default_version) in deps {
+        let version = fetch_version(&dep).unwrap_or_else(|| default_version.to_string());
+        deps_table[&dep] = toml_edit::value(version);
+    }
 }
 
 /// Removes quotes from table keys.
@@ -224,6 +295,7 @@ mod tests {
             Some(vec!["refcell".to_string()]),
             proj_name,
             "example workspace",
+            None,
         )
         .unwrap();
         assert!(cargo_toml_path_buf.exists());
@@ -295,6 +367,7 @@ debug = true
             false,
             None,
             None,
+            None,
         )
         .unwrap();
         assert!(dir_path_buf.exists());
@@ -310,6 +383,7 @@ debug = true
             "example",
             Some("example workspace"),
             true,
+            None,
             None,
             None,
         )

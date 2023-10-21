@@ -172,6 +172,8 @@ Options:
       --license                      Adds an MIT License to the project. The MIT License type can be overridden with the `--with-license` flag
       --gitignore                    Adds a Gitignore file to the project
   -d, --description <DESCRIPTION>    Specifies the description of the project in the top-level `Cargo.toml` workspace
+      --dependencies <DEPENDENCIES>  Adds these dependencies to the top-level `Cargo.toml` workspace alongside the default dependencies
+      --list                         Lists the default dependencies
       --with-license <WITH_LICENSE>  License Override. This will override the default MIT License. The license type must be a valid SPDX license identifier
   -h, --help                         Print help
   -V, --version                      Print version

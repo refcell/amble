@@ -64,6 +64,15 @@ pub struct Args {
     #[arg(long, short)]
     description: Option<String>,
 
+    /// Adds these dependencies to the top-level `Cargo.toml` workspace
+    /// alongside the default dependencies.
+    #[arg(long)]
+    dependencies: Option<Vec<String>>,
+
+    /// Lists the default dependencies.
+    #[arg(long)]
+    list: bool,
+
     /// License Override.
     /// This will override the default MIT License.
     /// The license type must be a valid SPDX license identifier.
@@ -96,6 +105,8 @@ pub fn run() -> Result<()> {
         mut gitignore,
         full,
         description,
+        list,
+        dependencies,
     } = Args::parse();
     let project_dir_path = std::path::Path::new(&project_dir);
 
@@ -103,6 +114,11 @@ pub fn run() -> Result<()> {
         with_ci = true;
         license = true;
         gitignore = true;
+    }
+
+    if list {
+        crate::root::list_dependencies()?;
+        return Ok(());
     }
 
     crate::telemetry::init_tracing_subscriber(v)?;
@@ -155,6 +171,7 @@ pub fn run() -> Result<()> {
             description.as_ref(),
             dry_run,
             authors,
+            dependencies,
             Some(&mut builder),
         )?;
         crate::bins::create(
