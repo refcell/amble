@@ -18,7 +18,7 @@
 [Docs]: https://img.shields.io/docsrs/amble.svg?color=319e8c&label=docs.rs
 
 
-**First class, scalable rust project generator with batteries included.**
+**First class, scalable rust project generator with batteries included.** Amble is in https://github.com/refcell/amble/labels/beta 🎉.
 
 ![](./etc/banner.png)
 
@@ -27,6 +27,7 @@
 | [Crate Docs][crates.io]
 | [Reference][Docs-rs]
 | [Contributing](#contributing)
+| [License](#license)
 
 ## What is amble?
 
@@ -49,12 +50,9 @@ project
    └─ lib.rs
 ```
 
-This directory structure doesn't lend itself to building
-large rust projects that use [workspaces][Workspaces].
-
 `amble` provides a more extensive cli command for generating
 project directory structures with [workspaces][Workspaces].
-Library "sub-crates" are nested inside the cannonical
+Library sub-crates are nested inside the cannonical
 `crates/` directory, while binary crates are nested inside
 the `bin/` directory. A top-level `Cargo.toml` file defines
 a workspace including the binaries and libraries as well as
@@ -134,6 +132,14 @@ structure as follows (`amble --dry-run --with-ci`).
       └─ ci.yml
 ```
 
+Amble also provides fallthrough methods for generating
+`cargo new` library and binary projects with batteries such as
+a templated readme, github action ci workflows, and licensing.
+The flags to pass through to `cargo new` operations are injective,
+meaning `amble --bin` will pass through to `cargo new --bin` and
+`amble --lib` will pass through to `cargo new --lib`. As usual,
+any other valid amble flag can be provided along with the `--lib`
+and `--bin` flags.
 
 #### CLI Flags
 
@@ -163,15 +169,9 @@ Options:
 
 *You can generate this output by running `amble --help`.*
 
-## Status
-
-`amble` is in https://github.com/refcell/amble/labels/beta mode 🎉.
-
-Experimentation is highly encouraged and new issues are welcome.
-
 ## Contributing
 
-All contributions are welcome!
+All contributions are welcome! Experimentation is highly encouraged and new issues are welcome.
 
 ## Troubleshooting & Bug Reports
 

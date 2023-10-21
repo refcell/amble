@@ -39,6 +39,18 @@ pub struct Args {
     #[arg(long, short)]
     authors: Option<Vec<String>>,
 
+    /// Builds a cargo binary project.
+    #[arg(long, short)]
+    bin: bool,
+
+    /// Builds a cargo library project.
+    #[arg(long, short)]
+    lib: bool,
+
+    /// License override.
+    #[arg(long)]
+    license: Option<String>,
+
     /// The path to the project directory.
     /// By default, the current working directory is used.
     /// If any rust artifacts are detected in the specified
@@ -58,8 +70,12 @@ pub fn run() -> Result<()> {
         with_ci,
         ci_yml,
         authors,
+        bin,
+        lib,
+        license,
     } = Args::parse();
     let project_dir_path = std::path::Path::new(&project_dir);
+    let mut overwrite = overwrite;
 
     crate::telemetry::init_tracing_subscriber(v)?;
 
@@ -71,7 +87,10 @@ pub fn run() -> Result<()> {
                 return Ok(());
             }
         }
-        false => crate::utils::check_artifacts(project_dir_path, dry_run)?,
+        false => {
+            crate::utils::check_artifacts(project_dir_path, with_ci || ci_yml.is_some(), dry_run)?;
+            overwrite = true;
+        }
     }
 
     // we don't need to prompt the user twice if overwrite mode is enabled
@@ -92,25 +111,34 @@ pub fn run() -> Result<()> {
         std::fs::create_dir_all(project_dir_path)?;
     }
 
-    crate::root::create(
-        project_dir_path,
-        &name,
-        dry_run,
-        authors,
-        Some(&mut builder),
-    )?;
-    crate::bins::create(
-        &project_dir_path.join("bin"),
-        &name,
-        dry_run,
-        Some(&mut builder),
-    )?;
-    crate::libs::create(
-        &project_dir_path.join("crates"),
-        "common",
-        dry_run,
-        Some(&mut builder),
-    )?;
+    if !bin && !lib {
+        crate::root::create(
+            project_dir_path,
+            &name,
+            dry_run,
+            authors,
+            Some(&mut builder),
+        )?;
+        crate::bins::create(
+            &project_dir_path.join("bin"),
+            &name,
+            dry_run,
+            Some(&mut builder),
+        )?;
+        crate::libs::create(
+            &project_dir_path.join("crates"),
+            "common",
+            dry_run,
+            Some(&mut builder),
+        )?;
+    } else if bin {
+        crate::cargo::create_bin(project_dir_path, dry_run, Some(&mut builder))?;
+    } else if lib {
+        crate::cargo::create_lib(project_dir_path, dry_run, Some(&mut builder))?;
+    }
+
+    let license = license.unwrap_or("mit".to_string());
+    crate::license::create(project_dir_path, license, dry_run, Some(&mut builder))?;
 
     if with_ci || ci_yml.is_some() {
         crate::ci::create(project_dir_path, dry_run, ci_yml, Some(&mut builder))?;

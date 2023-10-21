@@ -17,8 +17,10 @@
 pub mod cli;
 
 pub(crate) mod bins;
+pub(crate) mod cargo;
 pub(crate) mod ci;
 pub(crate) mod libs;
+pub(crate) mod license;
 pub(crate) mod root;
 pub(crate) mod telemetry;
 pub(crate) mod utils;
