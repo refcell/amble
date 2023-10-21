@@ -17,7 +17,10 @@ pub(crate) fn create(dir: &Path, dry: bool, tree: Option<&mut TreeBuilder>) -> R
 
     if !dry {
         tracing::debug!("Writing .gitignore to {:?}", dir.join(".gitignore"));
-        let mut file = std::fs::File::create(dir.join(".gitignore"))?;
+        let mut file = std::fs::File::options()
+            .append(true)
+            .create(true)
+            .open(dir.join(".gitignore"))?;
         let rust_gitignore = gitignores::Root::Rust.to_string();
         file.write_all(rust_gitignore.as_bytes())?;
     }
@@ -40,5 +43,14 @@ mod tests {
 
         assert!(package_dir.exists());
         assert!(package_dir.join(".gitignore").exists());
+
+        // Get the content lengths of the file
+        // and make sure that if we create again,
+        // the content length increases since the file
+        // is opened in append mode.
+        let first_content_length = package_dir.join(".gitignore").metadata().unwrap().len();
+        create(&package_dir, false, None).unwrap();
+        let second_content_length = package_dir.join(".gitignore").metadata().unwrap().len();
+        assert_eq!(second_content_length, 2 * first_content_length);
     }
 }

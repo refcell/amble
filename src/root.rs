@@ -6,10 +6,11 @@ use ptree::TreeBuilder;
 use tracing::instrument;
 
 /// Creates new top-level workspace artifacts at the given directory &[Path].
-#[instrument(name = "workspace", skip(dir, name, dry, author, tree))]
+#[instrument(name = "workspace", skip(dir, name, description, dry, author, tree))]
 pub(crate) fn create(
     dir: &Path,
     name: impl AsRef<str> + std::fmt::Display,
+    description: Option<impl AsRef<str> + std::fmt::Display>,
     dry: bool,
     author: Option<Vec<String>>,
     tree: Option<&mut TreeBuilder>,
@@ -18,7 +19,10 @@ pub(crate) fn create(
 
     if !dry {
         tracing::debug!("Writing {:?}", dir.join("Cargo.toml"));
-        fill_cargo(&dir.join("Cargo.toml"), author, name.as_ref())?;
+        let description = description
+            .map(|s| s.as_ref().to_string())
+            .unwrap_or(format!("{} workspace", name));
+        fill_cargo(&dir.join("Cargo.toml"), author, name.as_ref(), &description)?;
     }
     tree.map(|t| t.add_empty_child("Cargo.toml".to_string()));
 
@@ -91,7 +95,12 @@ pub(crate) fn fetch_version(c: &str) -> Option<String> {
 }
 
 /// Writes binary contents to the `Cargo.toml` file located at [file].
-pub(crate) fn fill_cargo(file: &Path, author: Option<Vec<String>>, name: &str) -> Result<()> {
+pub(crate) fn fill_cargo(
+    file: &Path,
+    author: Option<Vec<String>>,
+    name: &str,
+    description: &str,
+) -> Result<()> {
     let mut manifest = toml_edit::Document::new();
 
     manifest["workspace"] = toml_edit::Item::Table(toml_edit::Table::new());
@@ -103,7 +112,7 @@ pub(crate) fn fill_cargo(file: &Path, author: Option<Vec<String>>, name: &str) -
 
     manifest["workspace.package"] = toml_edit::Item::Table(toml_edit::Table::new());
     manifest["workspace.package"]["name"] = toml_edit::value(name);
-    manifest["workspace.package"]["description"] = toml_edit::value(format!("{} workspace", name));
+    manifest["workspace.package"]["description"] = toml_edit::value(description);
     manifest["workspace.package"]["version"] = toml_edit::value("0.1.0");
     manifest["workspace.package"]["edition"] = toml_edit::value("2021");
     manifest["workspace.package"]["license"] = toml_edit::value("MIT");
@@ -177,7 +186,7 @@ mod tests {
         let expected = semver::Version::parse("0.6.8").unwrap();
         let semversion = semver::Version::parse(&version).unwrap();
         // expect as greater than or equal to the expected version
-        //
+        // since the version may be updated in the future.
         assert!(semversion.gt(&expected) || semversion.eq(&expected));
     }
 
@@ -214,6 +223,7 @@ mod tests {
             &cargo_toml_path_buf,
             Some(vec!["refcell".to_string()]),
             proj_name,
+            "example workspace",
         )
         .unwrap();
         assert!(cargo_toml_path_buf.exists());
@@ -278,7 +288,15 @@ debug = true
     fn test_create() {
         let dir = tempdir().unwrap();
         let dir_path_buf = dir.path().to_path_buf();
-        create(&dir_path_buf, "example", false, None, None).unwrap();
+        create(
+            &dir_path_buf,
+            "example",
+            Some("example workspace"),
+            false,
+            None,
+            None,
+        )
+        .unwrap();
         assert!(dir_path_buf.exists());
         assert!(dir_path_buf.join("Cargo.toml").exists());
     }
@@ -287,7 +305,15 @@ debug = true
     fn test_create_dry_run() {
         let dir = tempdir().unwrap();
         let dir_path_buf = dir.path().to_path_buf();
-        create(&dir_path_buf, "example", true, None, None).unwrap();
+        create(
+            &dir_path_buf,
+            "example",
+            Some("example workspace"),
+            true,
+            None,
+            None,
+        )
+        .unwrap();
         assert!(!dir_path_buf.join("Cargo.toml").exists());
     }
 }

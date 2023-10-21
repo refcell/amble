@@ -60,6 +60,10 @@ pub struct Args {
     #[arg(long)]
     gitignore: bool,
 
+    /// Specifies the description of the project in the top-level `Cargo.toml` workspace.
+    #[arg(long, short)]
+    description: Option<String>,
+
     /// License Override.
     /// This will override the default MIT License.
     /// The license type must be a valid SPDX license identifier.
@@ -91,6 +95,7 @@ pub fn run() -> Result<()> {
         with_license,
         mut gitignore,
         full,
+        description,
     } = Args::parse();
     let project_dir_path = std::path::Path::new(&project_dir);
 
@@ -147,6 +152,7 @@ pub fn run() -> Result<()> {
         crate::root::create(
             project_dir_path,
             &name,
+            description.as_ref(),
             dry_run,
             authors,
             Some(&mut builder),
