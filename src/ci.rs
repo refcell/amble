@@ -18,10 +18,8 @@ pub(crate) fn create(
     let workflows_dir = dir.join(".github").join("workflows");
     let ci_yml_path_buf = workflows_dir.join("ci.yml");
 
-    if !dry {
-        tracing::debug!("Creating {:?} directory", workflows_dir);
-        std::fs::create_dir_all(workflows_dir)?;
-    }
+    crate::utils::create_dir_gracefully!(workflows_dir, dry);
+
     tree.as_deref_mut()
         .map(|t| t.begin_child(".github".to_string()));
     tree.as_deref_mut()

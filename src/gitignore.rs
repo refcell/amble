@@ -8,12 +8,7 @@ use tracing::instrument;
 #[instrument(name = "gitignore", skip(dir, dry, tree))]
 pub(crate) fn create(dir: &Path, dry: bool, tree: Option<&mut TreeBuilder>) -> Result<()> {
     tracing::info!("Creating a .gitignore file");
-
-    // Create the directory if it doesn't exist.
-    if !dry {
-        tracing::debug!("Creating directory {:?}", dir);
-        std::fs::create_dir_all(dir)?;
-    }
+    crate::utils::create_dir_gracefully!(dir, dry);
 
     if !dry {
         tracing::debug!("Writing .gitignore to {:?}", dir.join(".gitignore"));

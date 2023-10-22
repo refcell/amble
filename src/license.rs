@@ -24,12 +24,7 @@ pub(crate) fn create(
     tree: Option<&mut TreeBuilder>,
 ) -> Result<()> {
     tracing::info!("Creating license file");
-
-    // Create the directory if it doesn't exist.
-    if !dry {
-        tracing::debug!("Creating directory {:?}", dir);
-        std::fs::create_dir_all(dir)?;
-    }
+    crate::utils::create_dir_gracefully!(dir, dry);
 
     // Fetch the license in a tokio runtime.
     let license = match tokio::runtime::Runtime::new()?.block_on(fetch_license(license.as_ref())) {
