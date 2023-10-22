@@ -21,17 +21,10 @@ pub(crate) fn create(
     let readme_path_buf = lib_path_buf.join("README.md");
     let lib_rs_path_buf = lib_path_buf.join("src").join("lib.rs");
 
-    if !dry {
-        tracing::debug!("Creating {:?} directory", dir);
-        std::fs::create_dir_all(dir)?;
-    }
+    crate::utils::create_dir_gracefully!(src_path_buf, dry);
+
     tree.as_deref_mut()
         .map(|t| t.begin_child("crates".to_string()));
-
-    if !dry {
-        tracing::debug!("Creating {:?} directory", lib_path_buf);
-        std::fs::create_dir_all(&lib_path_buf)?;
-    }
     tree.as_deref_mut()
         .map(|t| t.begin_child(name.as_ref().to_string()));
 
@@ -48,11 +41,6 @@ pub(crate) fn create(
     }
     tree.as_deref_mut()
         .map(|t| t.add_empty_child("README.md".to_string()));
-
-    if !dry {
-        tracing::debug!("Creating {:?} directory", src_path_buf);
-        std::fs::create_dir_all(&src_path_buf)?;
-    }
     tree.as_deref_mut()
         .map(|t| t.begin_child("src".to_string()));
 

@@ -20,17 +20,10 @@ pub(crate) fn create(
     let src_path_buf = project_path_buf.join("src");
     let main_rs_path_buf = project_path_buf.join("src").join("main.rs");
 
-    if !dry {
-        tracing::debug!("Creating bin directory at {:?}", dir);
-        std::fs::create_dir_all(dir)?;
-    }
+    crate::utils::create_dir_gracefully!(src_path_buf, dry);
+
     tree.as_deref_mut()
         .map(|t| t.begin_child("bin".to_string()));
-
-    if !dry {
-        tracing::debug!("Creating crate directory at {:?}", project_path_buf);
-        std::fs::create_dir_all(&project_path_buf)?;
-    }
     tree.as_deref_mut()
         .map(|t| t.begin_child(name.as_ref().to_string()));
 
@@ -40,11 +33,6 @@ pub(crate) fn create(
     }
     tree.as_deref_mut()
         .map(|t| t.add_empty_child("Cargo.toml".to_string()));
-
-    if !dry {
-        tracing::debug!("Creating crate src directory at {:?}", src_path_buf);
-        std::fs::create_dir_all(&src_path_buf)?;
-    }
     tree.as_deref_mut()
         .map(|t| t.begin_child("src".to_string()));
 

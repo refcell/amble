@@ -7,12 +7,8 @@ use tracing::instrument;
 /// Creates a new cargo binary project in the given directory.
 #[instrument(name = "bin", skip(dir, dry, tree))]
 pub(crate) fn create_bin(dir: &Path, dry: bool, mut tree: Option<&mut TreeBuilder>) -> Result<()> {
+    crate::utils::create_dir_gracefully!(dir, dry);
     if !dry {
-        // Create the directory if it doesn't exist.
-        if !dir.exists() {
-            tracing::debug!("Creating directory {:?}", dir);
-            std::fs::create_dir_all(dir)?;
-        }
         // Execute the `cargo init --bin` command in the given directory.
         tracing::debug!("Executing `cargo init --bin` in {:?}", dir);
         let output = std::process::Command::new("cargo")
@@ -35,12 +31,8 @@ pub(crate) fn create_bin(dir: &Path, dry: bool, mut tree: Option<&mut TreeBuilde
 /// Creates a new cargo library project in the given directory.
 #[instrument(name = "lib", skip(dir, dry, tree))]
 pub(crate) fn create_lib(dir: &Path, dry: bool, mut tree: Option<&mut TreeBuilder>) -> Result<()> {
+    crate::utils::create_dir_gracefully!(dir, dry);
     if !dry {
-        // Create the directory if it doesn't exist.
-        if !dir.exists() {
-            tracing::debug!("Creating directory {:?}", dir);
-            std::fs::create_dir_all(dir)?;
-        }
         // Execute the `cargo init --lib` command in the given directory.
         tracing::debug!("Executing `cargo init --lib` in {:?}", dir);
         let output = std::process::Command::new("cargo")
