@@ -4,6 +4,19 @@ use eyre::Result;
 use inquire::Confirm;
 use tracing::instrument;
 
+/// Creates a directory if it doesn't exist and the provided `dry_run` flag is not set.
+#[macro_export]
+macro_rules! create_dir_gracefully {
+    ($dir:expr, $dry_run:expr) => {
+        if !$dry_run {
+            tracing::debug!("Creating directory {:?}", $dir);
+            std::fs::create_dir_all($dir)?;
+        }
+    };
+}
+
+pub(crate) use create_dir_gracefully;
+
 /// Checks if rust artifacts are present in the given directory.
 /// If `dry_run` is enabled, this method will not error if rust
 /// artifacts are found.
