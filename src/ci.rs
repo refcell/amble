@@ -145,24 +145,7 @@ jobs:
         continue-on-error: true
         run: RUSTDOCFLAGS="-D warnings" cargo doc --all --no-deps --all-features --document-private-items
       - name: doctest
-        run: cargo test --doc --all --all-features
-  cargo-audit:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v3
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          override: true
-      - uses: Swatinem/rust-cache@v1
-        with:
-          cache-on-failure: true
-      - name: cargo audit
-        run: cargo audit"#;
+        run: cargo test --doc --all --all-features"#;
     ci_yml.write_all(ci_contents.as_bytes())?;
     Ok(())
 }
