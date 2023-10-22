@@ -51,6 +51,11 @@ pub struct Args {
     #[arg(long)]
     full: bool,
 
+    /// Adds an `etc/` directory to the project.
+    /// This _Et Cetera_ directory is used for storing miscellaneous files.
+    #[arg(long)]
+    etc: bool,
+
     /// Adds an MIT License to the project.
     /// The MIT License type can be overridden with the `--with-license` flag.
     #[arg(long)]
@@ -107,6 +112,7 @@ pub fn run() -> Result<()> {
         description,
         list,
         dependencies,
+        mut etc,
     } = Args::parse();
     let project_dir_path = std::path::Path::new(&project_dir);
 
@@ -114,6 +120,7 @@ pub fn run() -> Result<()> {
         with_ci = true;
         license = true;
         gitignore = true;
+        etc = true;
     }
 
     if list {
@@ -162,6 +169,10 @@ pub fn run() -> Result<()> {
 
     if gitignore {
         crate::gitignore::create(project_dir_path, dry_run, Some(&mut builder))?;
+    }
+
+    if etc {
+        crate::etc::create(project_dir_path, dry_run, Some(&mut builder))?;
     }
 
     if !bin && !lib {

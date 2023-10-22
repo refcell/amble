@@ -169,6 +169,7 @@ Options:
   -b, --bin                          Builds a cargo binary project
   -l, --lib                          Builds a cargo library project
       --full                         Full generates a full project structure including license, ci, gitignore, etc
+      --etc                          Adds an `etc/` directory to the project. This _Et Cetera_ directory is used for storing miscellaneous files
       --license                      Adds an MIT License to the project. The MIT License type can be overridden with the `--with-license` flag
       --gitignore                    Adds a Gitignore file to the project
   -d, --description <DESCRIPTION>    Specifies the description of the project in the top-level `Cargo.toml` workspace

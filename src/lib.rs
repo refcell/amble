@@ -19,6 +19,7 @@ pub mod cli;
 pub(crate) mod bins;
 pub(crate) mod cargo;
 pub(crate) mod ci;
+pub(crate) mod etc;
 pub(crate) mod gitignore;
 pub(crate) mod libs;
 pub(crate) mod license;
