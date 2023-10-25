@@ -198,7 +198,15 @@ pub fn run() -> Result<()> {
             Some(&mut builder),
         )?;
     } else if bin {
-        crate::cargo::create_bin(project_dir_path, dry_run, Some(&mut builder))?;
+        crate::cargo::create_bin(
+            project_dir_path,
+            &name,
+            description.as_ref(),
+            dry_run,
+            authors,
+            dependencies,
+            Some(&mut builder),
+        )?;
     } else if lib {
         crate::cargo::create_lib(project_dir_path, dry_run, Some(&mut builder))?;
     }
