@@ -20,8 +20,8 @@ jobs:
         run: echo "GIT_REF=$(echo ${GITHUB_REF#refs/tags/})" >> $GITHUB_OUTPUT
       - name: Extract the git tag version
         run: |
-          echo "VERSION=`echo $(git describe --tags --abbrev=0 | sed -n 's/v\([0-9][^;]*\).*/\1/p')`" >> $GITHUB_ENV
-          echo "Exporting git ref version: $(git describe --tags --abbrev=0 | sed -n 's/v\([0-9][^;]*\).*/\1/p')"
+          echo "VERSION=`echo $(git describe --always --tags --abbrev=0 | sed -n 's/v\([0-9][^;]*\).*/\1/p')`" >> $GITHUB_ENV
+          echo "Exporting git ref version: $(git describe --always --tags --abbrev=0 | sed -n 's/v\([0-9][^;]*\).*/\1/p')"
         id: extract_git_version
     outputs:
       VERSION: ${{ steps.extract_git_version.outputs.VERSION }}
