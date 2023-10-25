@@ -15,3 +15,5 @@ Cargo.lock
 
 # MacOS Files to Ignore
 .DS_Store
+
+.env
