@@ -1,7 +1,11 @@
-name: manual tag release
+name: Manual Tag
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "The version to release. This should match the version in the Cargo.toml file. For example, 0.1.20"
+        required: true
 
 jobs:
   tag:
@@ -16,7 +20,6 @@ jobs:
     - name: Bump version and push tag
       uses: anothrNick/github-tag-action@master
       env:
-        DEFAULT_BUMP: minor
+        CUSTOM_TAG: v${{ inputs.version }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         REPO_OWNER: refcell
-        WITH_V: false
