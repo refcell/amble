@@ -18,6 +18,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Git Fetch
         run: git fetch -t 
+      - name: Print github ref
+        run: echo ${{ github.ref }}
       - name: Extract the git tag version
         run: echo "VERSION=`echo $(git describe --always --tags --abbrev=0 | sed -n 's/v\([0-9][^;]*\).*/\1/p')`" >> $GITHUB_ENV
         id: extract_git_version
