@@ -62,4 +62,5 @@ jobs:
         with:
           crate: semver-util
       - name: Validate semvers
-        run: semver cmp ${{ env.PACKAGEV }} gt ${{ env.VERSION }} || { echo "Cargo workspace version not bumped"; exit 1 }
+        run: semver cmp ${{ env.PACKAGEV }} gt ${{ env.VERSION }} || exit 1
+
