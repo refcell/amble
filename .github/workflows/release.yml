@@ -10,28 +10,46 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  extract-version:
+  extract-git-version:
     name: Extract the latest github tag version
     runs-on: ubuntu-latest
     steps:
-      - name: Extract version
+      - name: Extract git tag version
         run: echo "VERSION=$(echo ${GITHUB_REF#refs/tags/})" >> $GITHUB_OUTPUT
-        id: extract_version
+        id: extract_git_version
     outputs:
-      VERSION: ${{ steps.extract_version.outputs.VERSION }}
+      VERSION: ${{ steps.extract_git_version.outputs.VERSION }}
 
-  validate-crate-package-version:
-    name: Validate crate package version
+  extract-crate-package-version:
+    name: Extract the crate package version
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
       - name: Print Crate Package Version
         run: cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version'
         id: print_crate_package_version
+
       - name: Export Crate Package Version
         run: echo "PACKAGEV=$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')" >> $GITHUB_OUTPUT
         id: export_crate_package_version
     outputs:
       PACKAGEV: ${{ steps.extract_version.outputs.PACKAGEV }}
+
+  validate-crate-package-version:
+    name: Validates that the crate package version is greater than the github tag version
+    needs: [extract-git-version, extract-crate-package-version]
+    env:
+      VERSION: ${{ needs.extract-git-version.outputs.VERSION }}
+      PACKAGEV: ${{ needs.extract-crate-package-version.outputs.PACKAGEV }}
+    runs-on: ubuntu-latest
+      - name: Print Git Tag Semver
+        run: echo ${{ env.VERSION }}
+      - name: Print Crate Semver
+        run: echo ${{ env.PACKAGEV }}
+      - name: Validate semvers
+        run: echo "TODO"
 
   release:
     name: Publish Crate 
