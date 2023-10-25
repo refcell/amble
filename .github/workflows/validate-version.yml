@@ -22,9 +22,9 @@ jobs:
         id: previoustag
         uses: "WyriHaximus/github-action-get-previous-tag@v1"
       - name: Print latest tag without v prefix
-        run: echo ${{ steps.previoustag.outputs.tag }} | sed -n 's/v\([0-9][^;]*\).*/\1/p'
+        run: echo "VERSION=$(echo ${{ steps.previoustag.outputs.tag }} | sed -n 's/v\([0-9][^;]*\).*/\1/p')"
       - name: Extract the git tag version
-        run: echo "VERSION=`echo $(echo ${{ steps.previoustag.outputs.tag }} | sed -n 's/v\([0-9][^;]*\).*/\1/p')`" >> $GITHUB_ENV
+        run: echo "VERSION=$(echo ${{ steps.previoustag.outputs.tag }} | sed -n 's/v\([0-9][^;]*\).*/\1/p')" >> $GITHUB_ENV
         id: extract_git_version
       - name: Print the version from the extract_git_version step
         run: echo ${{ steps.extract_git_version.outputs.VERSION }}
