@@ -1,12 +1,14 @@
 # amble
 
-[![Build Status]][actions]
+[![CI Build Status]][actions]
+[![Tag Build Status]][actions]
 [![License]][mit-license]
 [![Docs]][Docs-rs]
 [![Latest Version]][crates.io]
 [![rustc 1.31+]][Rust 1.31]
 
-[Build Status]: https://img.shields.io/github/actions/workflow/status/refcell/amble/ci.yml?branch=main
+[CI Build Status]: https://img.shields.io/github/actions/workflow/status/refcell/amble/ci.yml?branch=main&label=build
+[Tag Build Status]: https://img.shields.io/github/actions/workflow/status/refcell/amble/tag.yml?branch=main&label=tag
 [actions]: https://github.com/refcell/amble/actions?query=branch%3Amain
 [Latest Version]: https://img.shields.io/crates/v/amble.svg
 [crates.io]: https://crates.io/crates/amble
