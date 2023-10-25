@@ -18,7 +18,7 @@
 [Docs]: https://img.shields.io/docsrs/amble.svg?color=319e8c&label=docs.rs
 
 
-**First class, scalable rust project generator with batteries included.** Amble is in https://github.com/refcell/amble/labels/beta 🎉.
+**First class, scalable rust project generator with batteries included.** Amble is https://github.com/refcell/amble/labels/stable
 
 ![](./etc/banner.png)
 
