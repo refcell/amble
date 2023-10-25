@@ -29,13 +29,12 @@ jobs:
 
       - name: Print Crate Package Version
         run: cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version'
-        id: print_crate_package_version
 
       - name: Export Crate Package Version
         run: echo "PACKAGEV=$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')" >> $GITHUB_OUTPUT
         id: export_crate_package_version
     outputs:
-      PACKAGEV: ${{ steps.extract_version.outputs.PACKAGEV }}
+      PACKAGEV: ${{ steps.export_crate_package_version.outputs.PACKAGEV }}
 
   validate-crate-package-version:
     name: Validates that the crate package version is greater than the github tag version
