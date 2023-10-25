@@ -21,12 +21,10 @@ jobs:
       - name: 'Get Previous tag'
         id: previoustag
         uses: "WyriHaximus/github-action-get-previous-tag@v1"
-      - name: Print latest tag without v prefix
-        run: echo "VERSION=$(echo ${{ steps.previoustag.outputs.tag }} | sed -n 's/v\([0-9][^;]*\).*/\1/p')"
       - name: Extract the git tag version
-        run: echo "VERSION=$(echo ${{ steps.previoustag.outputs.tag }} | sed -n 's/v\([0-9][^;]*\).*/\1/p')" >> $GITHUB_ENV
+        run: echo "VERSION=$(echo ${{ steps.previoustag.outputs.tag }} | sed -n 's/v\([0-9][^;]*\).*/\1/p')" >> $GITHUB_OUTPUT
         id: extract_git_version
-      - name: Print the version from the extract_git_version step
+      - name: Print VERSION from the previous step
         run: echo ${{ steps.extract_git_version.outputs.VERSION }}
     outputs:
       VERSION: ${{ steps.extract_git_version.outputs.VERSION }}
@@ -40,10 +38,10 @@ jobs:
       - name: Print Crate Package Version
         run: cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version'
       - name: Export Crate Package Version
-        run: |
-          echo "PACKAGEV=$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')" >> $GITHUB_OUTPUT
-          echo "Exporting package version: $(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')"
+        run: echo "PACKAGEV=$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')" >> $GITHUB_OUTPUT
         id: export_crate_package_version
+      - name: Print PACKAGEV from previous step
+        run: echo ${{ steps.export_crate_package_version.outputs.VERSION }}
     outputs:
       PACKAGEV: ${{ steps.export_crate_package_version.outputs.PACKAGEV }}
 
