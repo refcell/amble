@@ -57,8 +57,9 @@ jobs:
         run: echo ${{ env.VERSION }}
       - name: Print Crate Semver
         run: echo ${{ env.PACKAGEV }}
+      - name: Install semver-util from crates.io
+        uses: baptiste0928/cargo-install@v2
+        with:
+          crate: semver-util
       - name: Validate semvers
-        run: |
-          cargo install semver-util
-          semver cmp ${{ env.PACKAGEV }} lte ${{ env.VERSION }} && exit 1
-
+        run: semver cmp ${{ env.PACKAGEV }} gt ${{ env.VERSION }} || { echo "Cargo workspace version not bumped"; exit 1 }
