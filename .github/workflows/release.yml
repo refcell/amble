@@ -43,6 +43,7 @@ jobs:
       VERSION: ${{ needs.extract-git-version.outputs.VERSION }}
       PACKAGEV: ${{ needs.extract-crate-package-version.outputs.PACKAGEV }}
     runs-on: ubuntu-latest
+    steps:
       - name: Print Git Tag Semver
         run: echo ${{ env.VERSION }}
       - name: Print Crate Semver
