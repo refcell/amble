@@ -1,9 +1,9 @@
-name: Manual Crate Publish
+name: Release 
 
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["Create Tag", "CI"]
+    workflows: ["Tag"]
     branches: [main]
     types: 
       - completed
@@ -13,7 +13,7 @@ env:
 
 jobs:
   publish:
-    name: Manually Publish Crate
+    name: Publish Crate to Crates.io
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
