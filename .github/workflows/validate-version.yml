@@ -17,10 +17,12 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v3
       - name: Git Fetch
-        run: git fetch --prune --unshallow
+        run: git fetch -t 
       - name: Extract the git tag version
         run: echo "VERSION=`echo $(git describe --always --tags --abbrev=0 | sed -n 's/v\([0-9][^;]*\).*/\1/p')`" >> $GITHUB_ENV
         id: extract_git_version
+      - name: Print the version from the extract_git_version step
+        run: echo ${{ steps.extract_git_version.outputs.VERSION }}
     outputs:
       VERSION: ${{ steps.extract_git_version.outputs.VERSION }}
 
