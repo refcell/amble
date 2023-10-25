@@ -16,6 +16,7 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v3
+      - name: Git Fetch
         run: git fetch --prune --unshallow
       - name: Extract git tag version
         run: echo "GIT_REF=$(echo ${GITHUB_REF#refs/tags/})" >> $GITHUB_OUTPUT
