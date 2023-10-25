@@ -21,8 +21,8 @@ jobs:
       - name: 'Get Previous tag'
         id: previoustag
         uses: "WyriHaximus/github-action-get-previous-tag@v1"
-      - name: Print latest tag
-        run: echo ${{ steps.previoustag.outputs.tag }}
+      - name: Print latest tag without v prefix
+        run: echo ${{ steps.previoustag.outputs.tag }} | sed -n 's/v\([0-9][^;]*\).*/\1/p'
       - name: Extract the git tag version
         run: echo "VERSION=`echo $(echo ${{ steps.previoustag.outputs.tag }} | sed -n 's/v\([0-9][^;]*\).*/\1/p')`" >> $GITHUB_ENV
         id: extract_git_version
