@@ -6,7 +6,33 @@ on:
       - 'v*'
   workflow_dispatch:
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
+  extract-version:
+    name: Extract the latest github tag version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract version
+        run: echo "VERSION=$(echo ${GITHUB_REF#refs/tags/})" >> $GITHUB_OUTPUT
+        id: extract_version
+    outputs:
+      VERSION: ${{ steps.extract_version.outputs.VERSION }}
+
+  validate-crate-package-version:
+    name: Validate crate package version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Crate Package Version
+        run: cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version'
+        id: print_crate_package_version
+      - name: Export Crate Package Version
+        run: echo "PACKAGEV=$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')" >> $GITHUB_OUTPUT
+        id: export_crate_package_version
+    outputs:
+      PACKAGEV: ${{ steps.extract_version.outputs.PACKAGEV }}
+
   release:
     name: Publish Crate 
     runs-on: ubuntu-latest
