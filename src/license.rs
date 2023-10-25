@@ -1,5 +1,5 @@
+use anyhow::Result;
 use chrono::Datelike;
-use eyre::Result;
 use ptree::TreeBuilder;
 use std::io::Write;
 use std::path::Path;
@@ -67,10 +67,12 @@ pub(crate) async fn fetch_license(name: impl AsRef<str>) -> Result<String> {
             "Failed to find license \"{}\" in SPDX database",
             name.as_ref()
         );
-        eyre::eyre!(e)
+        anyhow::anyhow!(e)
     })?;
     tracing::debug!("Fetched license from lice");
-    license.license_text.ok_or(eyre::eyre!("no license text!"))
+    license
+        .license_text
+        .ok_or(anyhow::anyhow!("no license text!"))
 }
 
 #[cfg(test)]

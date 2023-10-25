@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use eyre::Result;
+use anyhow::Result;
 use inquire::Confirm;
 use tracing::instrument;
 
@@ -32,7 +32,7 @@ pub(crate) fn check_artifacts(dir: &Path, ci: bool, dry_run: bool) -> Result<()>
             .prompt()?
         {
             println!("Phew, close call... aborting");
-            eyre::bail!("User aborted after detecting rust artifacts in the project directory");
+            anyhow::bail!("User aborted after detecting rust artifacts in the project directory");
         }
         prompted = true;
     }
@@ -42,7 +42,7 @@ pub(crate) fn check_artifacts(dir: &Path, ci: bool, dry_run: bool) -> Result<()>
             .prompt()?
         {
             println!("Phew, close call... aborting");
-            eyre::bail!("User aborted after detecting rust artifacts in the project directory");
+            anyhow::bail!("User aborted after detecting rust artifacts in the project directory");
         }
         prompted = true;
     }
@@ -59,7 +59,7 @@ pub(crate) fn check_artifacts(dir: &Path, ci: bool, dry_run: bool) -> Result<()>
             .prompt()?
         {
             println!("Phew, close call... aborting");
-            eyre::bail!("User aborted after detecting rust artifacts in the project directory");
+            anyhow::bail!("User aborted after detecting rust artifacts in the project directory");
         }
     }
     Ok(())

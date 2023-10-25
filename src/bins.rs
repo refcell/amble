@@ -1,7 +1,7 @@
 use std::io::Write;
 use std::path::Path;
 
-use eyre::Result;
+use anyhow::Result;
 use ptree::TreeBuilder;
 use tracing::instrument;
 
@@ -78,8 +78,8 @@ pub(crate) fn fill_cargo(file: &Path, name: &str) -> Result<()> {
     manifest["dependencies"]["common"]["path"] = toml_edit::value("../../crates/common");
     manifest["dependencies"]["clap"] = inline.clone();
     manifest["dependencies"]["clap"]["workspace"] = toml_edit::value(true);
-    manifest["dependencies"]["eyre"] = inline.clone();
-    manifest["dependencies"]["eyre"]["workspace"] = toml_edit::value(true);
+    manifest["dependencies"]["anyhow"] = inline.clone();
+    manifest["dependencies"]["anyhow"]["workspace"] = toml_edit::value(true);
     manifest["dependencies"]["inquire"] = inline.clone();
     manifest["dependencies"]["inquire"]["workspace"] = toml_edit::value(true);
     manifest["dependencies"]["tracing"] = inline.clone();
@@ -126,7 +126,7 @@ homepage = { workspace = true }
 [dependencies]
 common = { path = "../../crates/common" }
 clap = { workspace = true }
-eyre = { workspace = true }
+anyhow = { workspace = true }
 inquire = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
