@@ -1,17 +1,19 @@
-name: Crate Release
+name: Manual Crate Publish
 
 on:
-  push:
-    tags:        
-      - 'v*'
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Create Tag", "CI"]
+    branches: [main]
+    types: 
+      - completed
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  release:
-    name: Publish Crate 
+  publish:
+    name: Manually Publish Crate
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
