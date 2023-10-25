@@ -1,7 +1,7 @@
 use std::io::Write;
 use std::path::Path;
 
-use eyre::Result;
+use anyhow::Result;
 use ptree::TreeBuilder;
 use tracing::instrument;
 
@@ -92,10 +92,10 @@ pub(crate) fn fetch_version(c: &str) -> Option<String> {
         return None;
     }
     let output_str = String::from_utf8(cargo_search_output.stdout).ok()?;
-    let eyre_line = output_str
+    let anyhow_line = output_str
         .lines()
         .find(|l| l.starts_with(&format!("{} = ", c)))?;
-    let version = eyre_line
+    let version = anyhow_line
         .strip_prefix(&format!("{} = \"", c))
         .and_then(|s| s.split('"').next());
     version.map(|s| s.to_string())
@@ -162,8 +162,8 @@ pub(crate) fn list_dependencies() -> Result<()> {
         prettytable::Cell::new("Version"),
     ]));
     table.add_row(prettytable::Row::new(vec![
-        prettytable::Cell::new("eyre"),
-        prettytable::Cell::new("0.6.8"),
+        prettytable::Cell::new("anyhow"),
+        prettytable::Cell::new("1.0"),
     ]));
     table.add_row(prettytable::Row::new(vec![
         prettytable::Cell::new("inquire"),
@@ -199,7 +199,7 @@ pub(crate) fn add_workspace_deps(
     overrides: Option<Vec<String>>,
 ) {
     let default_inline_dependencies = vec![
-        ("eyre".to_string(), "0.6.8".to_string()),
+        ("anyhow".to_string(), "1.0".to_string()),
         ("inquire".to_string(), "0.6.2".to_string()),
         ("tracing".to_string(), "0.1.39".to_string()),
         ("serde".to_string(), "1.0.189".to_string()),
@@ -253,8 +253,8 @@ mod tests {
 
     #[test]
     fn test_fetch_version() {
-        let version = fetch_version("eyre").unwrap();
-        let expected = semver::Version::parse("0.6.8").unwrap();
+        let version = fetch_version("anyhow").unwrap();
+        let expected = semver::Version::parse("1.0.75").unwrap();
         let semversion = semver::Version::parse(&version).unwrap();
         // expect as greater than or equal to the expected version
         // since the version may be updated in the future.
@@ -304,7 +304,7 @@ mod tests {
         let mut cargo_toml = File::open(cargo_toml_path_buf).unwrap();
         let mut cargo_toml_contents = String::new();
         cargo_toml.read_to_string(&mut cargo_toml_contents).unwrap();
-        let eyre_version = fetch_version("eyre").unwrap_or_else(|| "0.6.8".to_string());
+        let anyhow_version = fetch_version("anyhow").unwrap_or_else(|| "1.0".to_string());
         let inquire_version = fetch_version("inquire").unwrap_or_else(|| "0.6.2".to_string());
         let tracing_version = fetch_version("tracing").unwrap_or_else(|| "0.1.39".to_string());
         let serde_version = fetch_version("serde").unwrap_or_else(|| "1.0.189".to_string());
@@ -330,7 +330,7 @@ homepage = "https://github.com/refcell/example"
 exclude = ["**/target", "benches/", "tests"]
 
 [workspace.dependencies]
-eyre = "{}"
+anyhow = "{}"
 inquire = "{}"
 tracing = "{}"
 serde = "{}"
@@ -345,7 +345,7 @@ overflow-checks = false
 [profile.bench]
 debug = true
 "#,
-            eyre_version,
+            anyhow_version,
             inquire_version,
             tracing_version,
             serde_version,

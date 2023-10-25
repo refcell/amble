@@ -1,7 +1,7 @@
 use std::io::Write;
 use std::path::Path;
 
-use eyre::Result;
+use anyhow::Result;
 use ptree::TreeBuilder;
 use tracing::instrument;
 
@@ -110,8 +110,8 @@ pub(crate) fn fill_cargo(file: &Path, name: &str) -> Result<()> {
     manifest["dependencies"]["serde"]["workspace"] = toml_edit::value(true);
     manifest["dependencies"]["serde_json"] = inline.clone();
     manifest["dependencies"]["serde_json"]["workspace"] = toml_edit::value(true);
-    manifest["dependencies"]["eyre"] = inline.clone();
-    manifest["dependencies"]["eyre"]["workspace"] = toml_edit::value(true);
+    manifest["dependencies"]["anyhow"] = inline.clone();
+    manifest["dependencies"]["anyhow"]["workspace"] = toml_edit::value(true);
     manifest["dependencies"]["tracing"] = inline.clone();
     manifest["dependencies"]["tracing"]["workspace"] = toml_edit::value(true);
 
@@ -154,7 +154,7 @@ homepage = { workspace = true }
 [dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }
-eyre = { workspace = true }
+anyhow = { workspace = true }
 tracing = { workspace = true }
 "#;
         assert_eq!(cargo_toml_contents, expected_contents);

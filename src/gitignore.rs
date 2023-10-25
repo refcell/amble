@@ -1,4 +1,4 @@
-use eyre::Result;
+use anyhow::Result;
 use ptree::TreeBuilder;
 use std::io::Write;
 use std::path::Path;
