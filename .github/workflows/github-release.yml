@@ -1,0 +1,53 @@
+name: Github Release 
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Tag"]
+    branches: [main]
+    types: 
+      - completed
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  fetch-latest-tag:
+    name: Fetch the latest published git tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get Previous tag
+        id: previoustag
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+      - name: Extract the git tag version
+        run: echo "TAG=${{ steps.previoustag.outputs.tag }}" >> $GITHUB_OUTPUT
+        id: extract_git_version
+      - name: Print VERSION from the previous step
+        run: echo ${{ steps.extract_git_version.outputs.TAG }}
+    outputs:
+      TAG: ${{ steps.extract_git_version.outputs.TAG }}
+
+  release:
+    name: Release on Github
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: [fetch-latest-tag]
+    env:
+      TAG: ${{ needs.fetch-latest-tag.outputs.TAG }}
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Build the target directory
+      run: cargo build --release
+    - name: Generate the Release Tarball
+      run: tar --directory=target/release -cf release.tar.gz amble
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "release.tar.gz"
+        tag: ${{ env.TAG }}
