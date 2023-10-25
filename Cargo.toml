@@ -1,6 +1,6 @@
 ["package"]
 name = "amble"
-description = "First class, scalable rust workspace project generator with batteries included."
+description = "First class, scalable rust project generator with batteries included."
 version = "0.1.21"
 edition = "2021"
 license = "MIT"
