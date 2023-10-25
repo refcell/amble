@@ -14,10 +14,14 @@ jobs:
     name: Extract the latest github tag version
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
       - name: Extract git tag version
         run: echo "GIT_REF=$(echo ${GITHUB_REF#refs/tags/})" >> $GITHUB_OUTPUT
       - name: Extract the git tag version
-        run: echo "VERSION=`echo $(git describe --tags --abbrev=0 | sed -n 's/v\([0-9][^;]*\).*/\1/p')`" >> $GITHUB_ENV
+        run: |
+          echo "VERSION=`echo $(git describe --tags --abbrev=0 | sed -n 's/v\([0-9][^;]*\).*/\1/p')`" >> $GITHUB_ENV
+          echo "Exporting git ref version: $(git describe --tags --abbrev=0 | sed -n 's/v\([0-9][^;]*\).*/\1/p')"
         id: extract_git_version
     outputs:
       VERSION: ${{ steps.extract_git_version.outputs.VERSION }}
@@ -31,7 +35,9 @@ jobs:
       - name: Print Crate Package Version
         run: cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version'
       - name: Export Crate Package Version
-        run: echo "PACKAGEV=$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')" >> $GITHUB_OUTPUT
+        run: |
+          echo "PACKAGEV=$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')" >> $GITHUB_OUTPUT
+          echo "Exporting package version: $(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')"
         id: export_crate_package_version
     outputs:
       PACKAGEV: ${{ steps.export_crate_package_version.outputs.PACKAGEV }}
