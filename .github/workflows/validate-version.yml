@@ -18,12 +18,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Git Fetch
         run: git fetch --prune --unshallow
-      - name: Extract git tag version
-        run: echo "GIT_REF=$(echo ${GITHUB_REF#refs/tags/})" >> $GITHUB_OUTPUT
       - name: Extract the git tag version
-        run: |
-          echo "VERSION=`echo $(git describe --always --tags --abbrev=0 | sed -n 's/v\([0-9][^;]*\).*/\1/p')`" >> $GITHUB_ENV
-          echo "Exporting git ref version: $(git describe --always --tags --abbrev=0 | sed -n 's/v\([0-9][^;]*\).*/\1/p')"
+        run: echo "VERSION=`echo $(git describe --always --tags --abbrev=0 | sed -n 's/v\([0-9][^;]*\).*/\1/p')`" >> $GITHUB_ENV
         id: extract_git_version
     outputs:
       VERSION: ${{ steps.extract_git_version.outputs.VERSION }}
