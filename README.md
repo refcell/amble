@@ -176,6 +176,7 @@ Options:
       --without-readme               Prevents a readme from being generated
       --full                         Full generates a full project structure including license, ci, gitignore, etc
       --etc                          Adds an `etc/` directory to the project. This _Et Cetera_ directory is used for storing miscellaneous files
+      --assets                       Adds template assets to the `etc/` directory of the generate project. Will be run automatically if the `--full` flag is provided
       --license                      Adds an MIT License to the project. The MIT License type can be overridden with the `--with-license` flag
       --gitignore                    Adds a Gitignore file to the project
   -d, --description <DESCRIPTION>    Specifies the description of the project in the top-level `Cargo.toml` workspace
