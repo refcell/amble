@@ -87,8 +87,7 @@ pub(crate) fn create(
             ci_yml_path_buf
         );
         std::fs::copy(ci.as_ref().unwrap(), ci_yml_path_buf)?;
-        tree.as_deref_mut()
-            .map(|t| t.add_empty_child(ci.unwrap()));
+        tree.as_deref_mut().map(|t| t.add_empty_child(ci.unwrap()));
     }
 
     tree.as_deref_mut().map(|t| t.end_child()); // <- workflows/
