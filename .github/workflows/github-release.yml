@@ -46,7 +46,7 @@ jobs:
     - name: Build the target directory
       run: cargo build --release
     - name: Generate the Release Tarball
-      run: tar --directory=target/release -cf release.tar.gz amble
+      run: tar --directory=target/release -cf release.tar.gz $(ls -U target/release/ | head -1)
     - uses: ncipollo/release-action@v1
       with:
         artifacts: "release.tar.gz"

@@ -6,7 +6,7 @@
 [![License]][mit-license]
 [![Docs]][Docs-rs]
 [![Latest Version]][crates.io]
-[![rustc 1.31+]][Rust 1.31]
+[![rustc 1.70+]][Rust 1.70]
 
 [CI Build Status]: https://img.shields.io/github/actions/workflow/status/refcell/amble/ci.yml?branch=main&label=build
 [Tag Build Status]: https://img.shields.io/github/actions/workflow/status/refcell/amble/tag.yml?branch=main&label=tag
@@ -14,8 +14,8 @@
 [actions]: https://github.com/refcell/amble/actions?query=branch%3Amain
 [Latest Version]: https://img.shields.io/crates/v/amble.svg
 [crates.io]: https://crates.io/crates/amble
-[rustc 1.31+]: https://img.shields.io/badge/rustc_1.31+-lightgray.svg
-[Rust 1.31]: https://blog.rust-lang.org/2018/12/06/Rust-1.31-and-rust-2018.html
+[rustc 1.70+]: https://img.shields.io/badge/rustc_1.70+-lightgray.svg?label=msrv
+[Rust 1.70]: https://blog.rust-lang.org/2023/06/01/Rust-1.70.0.html
 [License]: https://img.shields.io/badge/license-MIT-7795AF.svg
 [mit-license]: https://github.com/refcell/amble/blob/main/LICENSE.md
 [Docs-rs]: https://docs.rs/amble/
