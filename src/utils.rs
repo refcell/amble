@@ -37,12 +37,22 @@ pub(crate) fn check_artifacts(dir: &Path, ci: bool, dry_run: bool) -> Result<()>
         prompted = true;
     }
     if !prompted && dir.join("LICENSE").exists() {
-        tracing::warn!("Rust artifacts detected in the project directory");
+        tracing::warn!("LICENSE detected in the project directory");
         if !Confirm::new("[WARNING] Found conflicting files. Are you sure you wish to proceed?")
             .prompt()?
         {
             println!("Phew, close call... aborting");
-            anyhow::bail!("User aborted after detecting rust artifacts in the project directory");
+            anyhow::bail!("User aborted after detecting existing license in the project directory");
+        }
+        prompted = true;
+    }
+    if !prompted && dir.join("README.md").exists() {
+        tracing::warn!("README detected in the project directory");
+        if !Confirm::new("[WARNING] Found README.md in the project directory. Proceeding will overwrite this file. Are you sure you wish to proceed?")
+            .prompt()?
+        {
+            println!("Phew, close call... aborting");
+            anyhow::bail!("User aborted after detecting existing readme in the project directory");
         }
         prompted = true;
     }
