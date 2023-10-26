@@ -6,23 +6,34 @@ use ptree::TreeBuilder;
 use tracing::instrument;
 
 /// Creates new top-level workspace artifacts at the given directory &[Path].
+#[allow(clippy::too_many_arguments)]
 #[instrument(name = "workspace", skip(dir, name, description, dry, author, tree))]
 pub(crate) fn create(
     dir: &Path,
     name: impl AsRef<str> + std::fmt::Display,
     description: Option<impl AsRef<str> + std::fmt::Display>,
     dry: bool,
+    no_readme_override: bool,
     author: Option<Vec<String>>,
     overrides: Option<Vec<String>>,
-    tree: Option<&mut TreeBuilder>,
+    mut tree: Option<&mut TreeBuilder>,
 ) -> Result<()> {
     tracing::info!("Creating top level workspace artifacts for {}", name);
 
+    let description = description
+        .map(|s| s.as_ref().to_string())
+        .unwrap_or(format!("{} workspace", name));
+
+    if !dry && !no_readme_override {
+        tracing::debug!("Writing {:?}", dir.join("README.md"));
+        let mut file = std::fs::File::create(dir.join("README.md"))?;
+        file.write_all(description.as_bytes())?;
+        tree.as_deref_mut()
+            .map(|t| t.add_empty_child("README.md".to_string()));
+    }
+
     if !dry {
         tracing::debug!("Writing {:?}", dir.join("Cargo.toml"));
-        let description = description
-            .map(|s| s.as_ref().to_string())
-            .unwrap_or(format!("{} workspace", name));
         fill_cargo(
             &dir.join("Cargo.toml"),
             author,
@@ -365,6 +376,7 @@ debug = true
             "example",
             Some("example workspace"),
             false,
+            false,
             None,
             None,
             None,
@@ -372,6 +384,7 @@ debug = true
         .unwrap();
         assert!(dir_path_buf.exists());
         assert!(dir_path_buf.join("Cargo.toml").exists());
+        assert!(dir_path_buf.join("README.md").exists());
     }
 
     #[test]
@@ -383,11 +396,13 @@ debug = true
             "example",
             Some("example workspace"),
             true,
+            false,
             None,
             None,
             None,
         )
         .unwrap();
         assert!(!dir_path_buf.join("Cargo.toml").exists());
+        assert!(!dir_path_buf.join("README.md").exists());
     }
 }
