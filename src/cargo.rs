@@ -6,12 +6,14 @@ use ptree::TreeBuilder;
 use tracing::instrument;
 
 /// Creates a new cargo binary project in the given directory.
-#[instrument(name = "bin", skip(dir, name, description, dry, author, tree))]
+#[allow(clippy::too_many_arguments)]
+#[instrument(name = "bin", skip(dir, name, description, dry, bare, author, tree))]
 pub(crate) fn create_bin(
     dir: &Path,
     name: impl AsRef<str> + std::fmt::Display,
     description: Option<impl AsRef<str> + std::fmt::Display>,
     dry: bool,
+    bare: bool,
     author: Option<Vec<String>>,
     overrides: Option<Vec<String>>,
     mut tree: Option<&mut TreeBuilder>,
@@ -26,7 +28,8 @@ pub(crate) fn create_bin(
             .current_dir(dir)
             .output()?;
         tracing::debug!("cargo init --bin output: {:?}", output);
-
+    }
+    if !dry && !bare {
         tracing::debug!("Filling cargo contents in {:?}", dir);
         write_cargo_bin(
             &dir.join("Cargo.toml"),
@@ -83,12 +86,12 @@ pub(crate) fn write_cargo_bin(
 pub(crate) fn add_inline_deps(manifest: &mut toml_edit::Document, overrides: Option<Vec<String>>) {
     let default_inline_dependencies = vec![
         ("anyhow".to_string(), "1.0".to_string()),
-        ("inquire".to_string(), "0.6.2".to_string()),
-        ("tracing".to_string(), "0.1.39".to_string()),
-        ("serde".to_string(), "1.0.189".to_string()),
-        ("serde_json".to_string(), "1.0.107".to_string()),
-        ("tracing-subscriber".to_string(), "0.3.17".to_string()),
-        ("clap".to_string(), "4.4.3".to_string()),
+        ("inquire".to_string(), "0.6".to_string()),
+        ("tracing".to_string(), "0.1".to_string()),
+        ("serde".to_string(), "1.0".to_string()),
+        ("serde_json".to_string(), "1.0".to_string()),
+        ("tracing-subscriber".to_string(), "0.3".to_string()),
+        ("clap".to_string(), "4.4".to_string()),
     ];
     let combined = match overrides {
         Some(v) => {
@@ -116,8 +119,18 @@ pub(crate) fn add_inline_deps(manifest: &mut toml_edit::Document, overrides: Opt
 }
 
 /// Creates a new cargo library project in the given directory.
-#[instrument(name = "lib", skip(dir, dry, tree))]
-pub(crate) fn create_lib(dir: &Path, dry: bool, mut tree: Option<&mut TreeBuilder>) -> Result<()> {
+#[allow(clippy::too_many_arguments)]
+#[instrument(name = "lib", skip(dir, name, description, dry, bare, author, tree))]
+pub(crate) fn create_lib(
+    dir: &Path,
+    name: impl AsRef<str> + std::fmt::Display,
+    description: Option<impl AsRef<str> + std::fmt::Display>,
+    dry: bool,
+    bare: bool,
+    author: Option<Vec<String>>,
+    overrides: Option<Vec<String>>,
+    mut tree: Option<&mut TreeBuilder>,
+) -> Result<()> {
     crate::utils::create_dir_gracefully!(dir, dry);
     if !dry {
         // Execute the `cargo init --lib` command in the given directory.
@@ -129,6 +142,33 @@ pub(crate) fn create_lib(dir: &Path, dry: bool, mut tree: Option<&mut TreeBuilde
             .output()?;
         tracing::debug!("cargo init --lib output: {:?}", output);
     }
+    if !dry && !bare {
+        let readme_path_buf = dir.join("README.md");
+        let lib_rs_path_buf = dir.join("src").join("lib.rs");
+
+        tracing::debug!("Writing lib.rs in {:?}", dir);
+        let lib_contents = crate::libs::lib_contents();
+        let mut lib_rs = std::fs::File::create(lib_rs_path_buf)?;
+        lib_rs.write_all(lib_contents.as_bytes())?;
+        tracing::debug!("Finished writing lib.rs in {:?}", dir);
+
+        tracing::debug!("Filling cargo contents in {:?}", dir);
+        write_cargo_bin(
+            &dir.join("Cargo.toml"),
+            author,
+            name.as_ref(),
+            &description
+                .map(|d| d.to_string())
+                .unwrap_or_else(|| format!("{} library crate", name.as_ref())),
+            overrides,
+        )?;
+        tracing::debug!("Finished filling cargo contents in {:?}", dir);
+
+        tracing::debug!("Writing {:?}", readme_path_buf);
+        std::fs::write(&readme_path_buf, format!("# {}", name.as_ref()))?;
+    }
+    tree.as_deref_mut()
+        .map(|t| t.add_empty_child("README.md".to_string()));
     tree.as_deref_mut()
         .map(|t| t.add_empty_child("Cargo.toml".to_string()));
     tree.as_deref_mut()
@@ -218,6 +258,7 @@ clap = {{ version = "{}", features = ["derive"] }}
             "example",
             Some("example binary"),
             false,
+            false,
             None,
             None,
             None,
@@ -235,11 +276,22 @@ clap = {{ version = "{}", features = ["derive"] }}
         let dir = tempdir().unwrap();
         let dir_path_buf = dir.path().to_path_buf();
         let package_dir = dir_path_buf.join("example");
-        create_lib(&package_dir, false, None).unwrap();
+        create_lib(
+            &package_dir,
+            "example",
+            Some("example lib"),
+            false,
+            false,
+            None,
+            None,
+            None,
+        )
+        .unwrap();
 
         assert!(package_dir.exists());
         assert!(package_dir.join("src").exists());
         assert!(package_dir.join("src").join("lib.rs").exists());
         assert!(package_dir.join("Cargo.toml").exists());
+        assert!(package_dir.join("README.md").exists());
     }
 }

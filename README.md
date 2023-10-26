@@ -166,6 +166,7 @@ Options:
   -v, --v...                         Verbosity level (0-4)
       --dry-run                      Dry run mode. If this flag is provided, the cli will not execute commands, printing the directories and files that would be created instead
       --overwrite                    Overwrite existing files. If this flag is provided, the cli will overwrite existing files
+      --bare                         Bare mode. Only for `--bin` and `--lib` flags. If specified, generated files will be the basic `cargo init` files
   -n, --name <NAME>                  The project name. This will be used for the binary application name [default: example]
   -w, --with-ci                      Add github actions ci workflow
   -c, --ci-yml <CI_YML>              Copy the specified ci workflow file to the project's `.github/workflows/` directory

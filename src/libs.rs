@@ -5,6 +5,35 @@ use anyhow::Result;
 use ptree::TreeBuilder;
 use tracing::instrument;
 
+/// Returns the lib contents.
+pub(crate) fn lib_contents() -> &'static str {
+    r#"#![doc = include_str!("../README.md")]
+#![warn(
+    missing_debug_implementations,
+    missing_docs,
+    unreachable_pub,
+    rustdoc::all
+)]
+#![deny(unused_must_use, rust_2018_idioms)]
+#![cfg_attr(docsrs, feature(doc_cfg, doc_auto_cfg))]
+
+/// Adds two [usize] numbers together.
+pub fn add(left: usize, right: usize) -> usize {
+    left + right
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        let result = add(2, 2);
+        assert_eq!(result, 4);
+    }
+}"#
+}
+
 /// Creates a new lib crate.
 #[instrument(name = "lib", skip(dir, name, dry, tree))]
 pub(crate) fn create(
@@ -46,31 +75,7 @@ pub(crate) fn create(
 
     if !dry {
         tracing::debug!("Writing {:?}", lib_rs_path_buf);
-        let lib_contents = r#"#![doc = include_str!("../README.md")]
-#![warn(
-    missing_debug_implementations,
-    missing_docs,
-    unreachable_pub,
-    rustdoc::all
-)]
-#![deny(unused_must_use, rust_2018_idioms)]
-#![cfg_attr(docsrs, feature(doc_cfg, doc_auto_cfg))]
-
-/// Adds two [usize] numbers together.
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}"#;
+        let lib_contents = lib_contents();
         let mut lib_rs = std::fs::File::create(&lib_rs_path_buf)?;
         lib_rs.write_all(lib_contents.as_bytes())?;
     }
