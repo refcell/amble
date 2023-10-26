@@ -1,9 +1,13 @@
+use leon::Template;
 use std::io::Write;
 use std::path::Path;
 
 use anyhow::Result;
 use ptree::TreeBuilder;
 use tracing::instrument;
+
+/// The template readme included as a string literal from the `etc/` directory.
+pub(crate) const TEMPLATE_README: &str = include_str!("../etc/README.md");
 
 /// Creates new top-level workspace artifacts at the given directory &[Path].
 #[allow(clippy::too_many_arguments)]
@@ -26,8 +30,12 @@ pub(crate) fn create(
 
     if !dry && !no_readme_override {
         tracing::debug!("Writing {:?}", dir.join("README.md"));
+        let templated_readme =
+            format_template_readme(name.as_ref(), &description, &get_current_username(&author))?;
         let mut file = std::fs::File::create(dir.join("README.md"))?;
-        file.write_all(description.as_bytes())?;
+        file.write_all(templated_readme.as_bytes())?;
+    }
+    if !no_readme_override {
         tree.as_deref_mut()
             .map(|t| t.add_empty_child("README.md".to_string()));
     }
@@ -255,12 +263,41 @@ pub(crate) fn remove_table_quotes(s: String) -> String {
     result.to_string()
 }
 
+/// Reads the template readme file and returns the formatted string contents.
+pub(crate) fn format_template_readme(
+    project_name: &str,
+    project_description: &str,
+    project_owner: &str,
+) -> Result<String> {
+    let template = Template::parse(TEMPLATE_README)?;
+    let mut context = std::collections::HashMap::new();
+    context.insert("projectname", project_name);
+    context.insert("projectdescription", project_description);
+    context.insert("projectowner", project_owner);
+    let formatted = template.render(&context)?;
+    Ok(formatted)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::fs::File;
     use std::io::Read;
     use tempfile::tempdir;
+
+    #[test]
+    fn test_format_template_readme() {
+        // Verify that the template readme contains the template strs:
+        // {{projectname}}, {{projectdescription}}, {{projectowner}}
+        assert!(TEMPLATE_README.contains("{projectname}"));
+        assert!(TEMPLATE_README.contains("{projectdescription}"));
+        assert!(TEMPLATE_README.contains("{projectowner}"));
+        let template_readme = format_template_readme("example", "example workspace", "refcell")
+            .unwrap_or_else(|_| panic!("Failed to format template readme"));
+        assert!(template_readme.contains("example"));
+        assert!(template_readme.contains("example workspace"));
+        assert!(template_readme.contains("refcell"));
+    }
 
     #[test]
     fn test_fetch_version() {
