@@ -65,6 +65,11 @@ pub struct Args {
     #[arg(long)]
     etc: bool,
 
+    /// Adds template assets to the `etc/` directory of the generate project.
+    /// Will be run automatically if the `--full` flag is provided.
+    #[arg(long)]
+    assets: bool,
+
     /// Adds an MIT License to the project.
     /// The MIT License type can be overridden with the `--with-license` flag.
     #[arg(long)]
@@ -106,6 +111,7 @@ pub fn run() -> Result<()> {
     let Args {
         v,
         dry_run,
+        mut assets,
         bare,
         without_readme,
         name,
@@ -132,6 +138,7 @@ pub fn run() -> Result<()> {
         license = true;
         gitignore = true;
         etc = true;
+        assets = true;
     }
 
     if list {
@@ -183,7 +190,7 @@ pub fn run() -> Result<()> {
     }
 
     if etc {
-        crate::etc::create(project_dir_path, dry_run, Some(&mut builder))?;
+        crate::etc::create(project_dir_path, dry_run, assets, Some(&mut builder))?;
     }
 
     if !bin && !lib {
