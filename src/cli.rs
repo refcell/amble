@@ -22,6 +22,11 @@ pub struct Args {
     #[arg(long)]
     overwrite: bool,
 
+    /// Bare mode. Only for `--bin` and `--lib` flags. If specified,
+    /// generated files will be the basic `cargo init` files.
+    #[arg(long)]
+    bare: bool,
+
     /// The project name.
     /// This will be used for the binary application name.
     #[arg(long, short, default_value = "example")]
@@ -97,6 +102,7 @@ pub fn run() -> Result<()> {
     let Args {
         v,
         dry_run,
+        bare,
         name,
         project_dir,
         mut overwrite,
@@ -198,9 +204,27 @@ pub fn run() -> Result<()> {
             Some(&mut builder),
         )?;
     } else if bin {
-        crate::cargo::create_bin(project_dir_path, dry_run, Some(&mut builder))?;
+        crate::cargo::create_bin(
+            project_dir_path,
+            &name,
+            description.as_ref(),
+            dry_run,
+            bare,
+            authors,
+            dependencies,
+            Some(&mut builder),
+        )?;
     } else if lib {
-        crate::cargo::create_lib(project_dir_path, dry_run, Some(&mut builder))?;
+        crate::cargo::create_lib(
+            project_dir_path,
+            &name,
+            description.as_ref(),
+            dry_run,
+            bare,
+            authors,
+            dependencies,
+            Some(&mut builder),
+        )?;
     }
 
     if with_ci || ci_yml.is_some() {
