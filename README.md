@@ -173,6 +173,7 @@ Options:
   -a, --authors <AUTHORS>            Override the project authors
   -b, --bin                          Builds a cargo binary project
   -l, --lib                          Builds a cargo library project
+      --without-readme               Prevents a readme from being generated
       --full                         Full generates a full project structure including license, ci, gitignore, etc
       --etc                          Adds an `etc/` directory to the project. This _Et Cetera_ directory is used for storing miscellaneous files
       --license                      Adds an MIT License to the project. The MIT License type can be overridden with the `--with-license` flag

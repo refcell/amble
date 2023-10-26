@@ -52,6 +52,10 @@ pub struct Args {
     #[arg(long, short)]
     lib: bool,
 
+    /// Prevents a readme from being generated.
+    #[arg(long)]
+    without_readme: bool,
+
     /// Full generates a full project structure including license, ci, gitignore, etc.
     #[arg(long)]
     full: bool,
@@ -103,6 +107,7 @@ pub fn run() -> Result<()> {
         v,
         dry_run,
         bare,
+        without_readme,
         name,
         project_dir,
         mut overwrite,
@@ -187,6 +192,7 @@ pub fn run() -> Result<()> {
             &name,
             description.as_ref(),
             dry_run,
+            without_readme,
             authors,
             dependencies,
             Some(&mut builder),
