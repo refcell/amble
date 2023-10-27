@@ -21,4 +21,4 @@ tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 clap = { version = "4.4", features = ["derive"] }
 
-amble = { path = "../../crates/amble" }
+amble = { version = "*", path = "../../crates/amble" }
