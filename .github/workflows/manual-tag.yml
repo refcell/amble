@@ -14,11 +14,8 @@ jobs:
       contents: write
     timeout-minutes: 20
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: '0'
-    - name: Bump version and push tag
-      uses: anothrNick/github-tag-action@master
+    - uses: actions/checkout@v4
+    - uses: anothrNick/github-tag-action@master
       env:
         CUSTOM_TAG: v${{ inputs.version }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
