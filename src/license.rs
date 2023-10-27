@@ -1,3 +1,4 @@
+use aho_corasick::AhoCorasick;
 use anyhow::Result;
 use chrono::Datelike;
 use ptree::TreeBuilder;
@@ -10,9 +11,26 @@ pub(crate) const MIT_LICENSE: &str = "MIT License\n\nCopyright (c) [year] [fulln
 
 /// Helper function to build an MIT License with imputed values.
 pub(crate) fn build_mit_license() -> String {
-    MIT_LICENSE
-        .replace("[year]", &chrono::Utc::now().year().to_string())
-        .replace("[fullname]", &crate::root::get_current_username(&None))
+    impute_license(MIT_LICENSE)
+}
+
+/// Impute templated license strs with dynamic values.
+pub(crate) fn impute_license(haystack: &str) -> String {
+    let patterns = &["<year>", "[year]", "<fullname>", "[fullname]"];
+    let ac = AhoCorasick::builder()
+        .ascii_case_insensitive(true)
+        .build(patterns)
+        .unwrap();
+    let mut result = String::new();
+    ac.replace_all_with(haystack, &mut result, |mat, _, dst| {
+        match mat.pattern().as_usize() {
+            0 | 1 => dst.push_str(&chrono::Utc::now().year().to_string()),
+            2 | 3 => dst.push_str(&crate::root::get_current_username(&None)),
+            _ => unreachable!(),
+        }
+        true
+    });
+    result
 }
 
 /// Creates a new license file in the given directory.
@@ -97,6 +115,15 @@ mod tests {
             license.replace("\n\n", " ").replace("\n", " "),
             build_mit_license().replace("\n\n", " ").replace("\n", " ")
         );
+    }
+
+    #[test]
+    fn test_impute_license() {
+        let haystack = r#"MIT License <year> <fullname>"#;
+        let license = haystack
+            .replacen("<year>", &chrono::Utc::now().year().to_string(), 1)
+            .replacen("<fullname>", &crate::root::get_current_username(&None), 1);
+        assert_eq!(license, impute_license(haystack));
     }
 
     #[test]
