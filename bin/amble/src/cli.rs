@@ -54,7 +54,7 @@ pub struct Args {
     #[arg(long, short)]
     lib: bool,
 
-    /// Prevents a readme from being generated.
+    /// Prevents a readme from being generated or overwritten.
     #[arg(long)]
     without_readme: bool,
 

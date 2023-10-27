@@ -1,11 +1,10 @@
 use std::io::Write;
 use std::path::Path;
-
 use anyhow::Result;
 use ptree::TreeBuilder;
 use tracing::instrument;
 
-/// Creates a new cargo binary project in the given directory.
+/// Creates a new cargo binary project in the specified directory.
 #[allow(clippy::too_many_arguments)]
 #[instrument(name = "bin", skip(dir, name, description, dry, bare, author, tree))]
 pub fn create_bin(
