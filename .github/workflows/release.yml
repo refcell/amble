@@ -3,7 +3,7 @@ name: Release
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["Tag"]
+    workflows: ["CI"]
     branches: [main]
     types: 
       - completed
