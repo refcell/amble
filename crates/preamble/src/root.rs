@@ -6,8 +6,8 @@ use anyhow::Result;
 use ptree::TreeBuilder;
 use tracing::instrument;
 
-/// The template readme included as a string literal from the `etc/` directory.
-pub const TEMPLATE_README: &str = include_str!("../../../etc/README.md");
+/// A template readme as a string literal.
+pub const TEMPLATE_README: &str = include_str!("../etc/README.md");
 
 /// Creates new top-level workspace artifacts at the given directory &[Path].
 #[allow(clippy::too_many_arguments)]
