@@ -50,10 +50,9 @@ jobs:
         with:
           crate: cargo-workspaces
 
-      - name: Print
-        run: echo "Publishing crates with custom semver: ${{ env.PACKAGEV }}"
+      - name: Print custom semver extracted from the cargo metadata
+        run: echo ${{ env.PACKAGEV }}
 
       - run: cargo ws publish --token ${CRATES_TOKEN} --yes custom ${{ env.PACKAGEV }}
         env:
           CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
-
