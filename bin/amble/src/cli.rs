@@ -153,7 +153,7 @@ pub fn run() -> Result<()> {
     match overwrite {
         true => {
             tracing::warn!("Overwrite flag is set, existing files will be overwritten");
-            if !Confirm::new("[WARNING] Overwrite mode will overwrite any conflicting files and directories. Are you sure you wish to proceed?").prompt()? {
+            if !Confirm::new("[WARNING] Overwrite mode will overwrite any conflicting files. Are you sure you wish to proceed?").prompt()? {
                 println!("Phew, close call... aborting");
                 return Ok(());
             }
