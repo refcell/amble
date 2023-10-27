@@ -1,5 +1,5 @@
 [package]
-name = "amble"
+name = "preamble"
 description = { workspace = true }
 version = { workspace = true }
 edition = { workspace = true }
@@ -7,6 +7,10 @@ authors = { workspace = true }
 license = { workspace = true }
 repository = { workspace = true }
 homepage = { workspace = true }
+include = ["../../etc", "../../.github"]
+
+[lib]
+path = "src/lib.rs"
 
 [dependencies]
 anyhow = { workspace = true }

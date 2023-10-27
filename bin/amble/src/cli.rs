@@ -3,7 +3,7 @@ use clap::{ArgAction, Parser};
 use inquire::Confirm;
 use ptree::TreeBuilder;
 
-use amble::{bins, cargo, ci, etc, gitignore, libs, license, root, telemetry, utils};
+use preamble::{bins, cargo, ci, etc, gitignore, libs, license, root, telemetry, utils};
 
 /// Command line arguments.
 #[derive(Parser, Debug)]
