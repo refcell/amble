@@ -11,14 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: WyriHaximus/github-action-get-previous-tag@v1
-        id: previoustag
-      - run: echo ${{ steps.previoustag.outputs.tag }}
+      - uses: actions-ecosystem/action-get-latest-tag@v1
+        id: get-latest-tag 
       - name: Extract the git tag version
-        run: echo "VERSION=$(echo ${{ steps.previoustag.outputs.tag }} | sed 's/^.*[^0-9]\([0-9]*\.[0-9]*\.[0-9]*\).*$/\1/')" >> $GITHUB_OUTPUT
-        id: extract_git_version
+        run: echo "VERSION=$(echo ${{ steps.get-latest-tag.outputs.tag }} | sed 's/^.*[^0-9]\([0-9]*\.[0-9]*\.[0-9]*\).*$/\1/')" >> $GITHUB_OUTPUT
+        id: export-git-tag
     outputs:
-      VERSION: ${{ steps.extract_git_version.outputs.VERSION }}
+      VERSION: ${{ steps.export-git-tag.outputs.VERSION }}
 
   extract-crate-version:
     runs-on: ubuntu-latest
