@@ -6,7 +6,7 @@ resolver = "2"
 [workspace.package]
 name = "amble"
 description = "First class, scalable rust project generator with batteries included."
-version = "0.1.31"
+version = "0.1.32"
 edition = "2021"
 license = "MIT"
 authors = ["refcell"]
