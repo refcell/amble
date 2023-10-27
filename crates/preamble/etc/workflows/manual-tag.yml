@@ -1,0 +1,25 @@
+name: Manual Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "The version to release. This should match the version in the Cargo.toml file. For example, 0.1.20"
+        required: true
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: '0'
+    - name: Bump version and push tag
+      uses: anothrNick/github-tag-action@master
+      env:
+        CUSTOM_TAG: v${{ inputs.version }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPO_OWNER: refcell

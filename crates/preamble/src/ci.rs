@@ -5,26 +5,26 @@ use ptree::TreeBuilder;
 use tracing::instrument;
 
 /// CI Github Action Workflow String Literal.
-pub const CI_YML: &str = include_str!("../../../.github/workflows/ci.yml");
+pub const CI_YML: &str = include_str!("../etc/workflows/ci.yml");
 
 /// Audit Github Action Workflow String Literal.
-pub const AUDIT_YML: &str = include_str!("../../../.github/workflows/audit.yml");
+pub const AUDIT_YML: &str = include_str!("../etc/workflows/audit.yml");
 
 /// Github Release Github Action Workflow String Literal.
-pub const GITHUB_RELEASE_YML: &str = include_str!("../../../.github/workflows/github-release.yml");
+pub const GITHUB_RELEASE_YML: &str = include_str!("../etc/workflows/github-release.yml");
 
 /// Manual Tag Github Action Workflow String Literal.
-pub const MANUAL_TAG_YML: &str = include_str!("../../../.github/workflows/manual-tag.yml");
+pub const MANUAL_TAG_YML: &str = include_str!("../etc/workflows/manual-tag.yml");
 
 /// Release Github Action Workflow String Literal.
-pub const RELEASE_YML: &str = include_str!("../../../.github/workflows/release.yml");
+pub const RELEASE_YML: &str = include_str!("../etc/workflows/release.yml");
 
 /// Tag Github Action Workflow String Literal.
-pub const TAG_YML: &str = include_str!("../../../.github/workflows/tag.yml");
+pub const TAG_YML: &str = include_str!("../etc/workflows/tag.yml");
 
 /// Validate Version Github Action Workflow String Literal.
 pub const VALIDATE_VERSION_YML: &str =
-    include_str!("../../../.github/workflows/validate-version.yml");
+    include_str!("../etc/workflows/validate-version.yml");
 
 /// An array of Github Action Workflow String Literals.
 pub const WORKFLOWS: [(&str, &str); 7] = [

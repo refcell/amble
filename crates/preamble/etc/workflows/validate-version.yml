@@ -1,0 +1,65 @@
+name: Validate Release Version
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  extract-git-version:
+    name: Extract the latest github tag version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: 'Get Previous tag'
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      - name: Extract the git tag version
+        run: echo "VERSION=$(echo ${{ steps.previoustag.outputs.tag }} | sed -n 's/v\([0-9][^;]*\).*/\1/p')" >> $GITHUB_OUTPUT
+        id: extract_git_version
+      - name: Print VERSION from the previous step
+        run: echo ${{ steps.extract_git_version.outputs.VERSION }}
+    outputs:
+      VERSION: ${{ steps.extract_git_version.outputs.VERSION }}
+
+  extract-crate-package-version:
+    name: Extract the crate package version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+      - name: Print Crate Package Version
+        run: cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version'
+      - name: Export Crate Package Version
+        run: echo "PACKAGEV=$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')" >> $GITHUB_OUTPUT
+        id: export_crate_package_version
+      - name: Print PACKAGEV from previous step
+        run: echo ${{ steps.export_crate_package_version.outputs.VERSION }}
+    outputs:
+      PACKAGEV: ${{ steps.export_crate_package_version.outputs.PACKAGEV }}
+
+  validate-crate-package-version:
+    name: Validates that the crate package version is greater than the github tag version
+    runs-on: ubuntu-latest
+    needs: [extract-git-version, extract-crate-package-version]
+    env:
+      VERSION: ${{ needs.extract-git-version.outputs.VERSION }}
+      PACKAGEV: ${{ needs.extract-crate-package-version.outputs.PACKAGEV }}
+    steps:
+      - name: Print Git Tag Semver
+        run: echo ${{ env.VERSION }}
+      - name: Print Crate Semver
+        run: echo ${{ env.PACKAGEV }}
+      - name: Install semver-util from crates.io
+        uses: baptiste0928/cargo-install@v2
+        with:
+          crate: semver-util
+      - name: Validate semvers
+        run: semver cmp ${{ env.PACKAGEV }} gt ${{ env.VERSION }} || exit 1
