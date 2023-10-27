@@ -24,7 +24,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - name: Install cargo-workspaces from crates.io
+      - name: Install crates.io dependencies
         uses: baptiste0928/cargo-install@v2
         with:
           crate: cargo-release
