@@ -9,27 +9,25 @@ on:
       - completed
 
 jobs:
-  fetch-latest-tag:
-    name: Fetch the latest published git tag
+  extract-crate-version:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: WyriHaximus/github-action-get-previous-tag@v1
-        id: previoustag
-      - name: Extract the git tag version
-        run: echo "TAG=${{ steps.previoustag.outputs.tag }}" >> $GITHUB_OUTPUT
-        id: extract_git_version
+      - run: cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version'
+      - name: Export Crate Package Version
+        run: echo "PACKAGEV=$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')" >> $GITHUB_OUTPUT
+        id: export_crate_version
     outputs:
-      TAG: ${{ steps.extract_git_version.outputs.TAG }}
+      PACKAGEV: ${{ steps.export_crate_version.outputs.PACKAGEV }}
 
   release:
     name: Release on Github
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    needs: [fetch-latest-tag]
+    needs: [extract-crate-version]
     env:
-      TAG: ${{ needs.fetch-latest-tag.outputs.TAG }}
+      PACKAGEV: ${{ needs.extract-crate-version.outputs.PACKAGEV }}
     steps:
     - uses: actions/checkout@v4
     - name: Build the target directory
@@ -39,4 +37,4 @@ jobs:
     - uses: ncipollo/release-action@v1
       with:
         artifacts: "release.tar.gz"
-        tag: ${{ env.TAG }}
+        tag: v${{ env.PACKAGEV }}
