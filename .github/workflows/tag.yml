@@ -15,7 +15,7 @@ jobs:
       - run: cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version'
       - name: Export Crate Package Version
         run: echo "PACKAGEV=$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')" >> $GITHUB_OUTPUT
-        id: export_crate_package_version
+        id: export_crate_version
     outputs:
       PACKAGEV: ${{ steps.export_crate_version.outputs.PACKAGEV }}
 
