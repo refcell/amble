@@ -13,12 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version'
       - name: Export Crate Package Version
-        run: echo "PACKAGEV=$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')" >> $GITHUB_OUTPUT
         id: export_crate_version
     outputs:
-      PACKAGEV: ${{ steps.export_crate_version.outputs.PACKAGEV }}
+      VERSION: ${{ steps.export_crate_version.outputs.VERSION }}
 
   release:
     name: Release on Github
@@ -27,14 +26,13 @@ jobs:
       contents: write
     needs: [extract-crate-version]
     env:
-      PACKAGEV: ${{ needs.extract-crate-version.outputs.PACKAGEV }}
+      VERSION: ${{ needs.extract-crate-version.outputs.VERSION }}
     steps:
     - uses: actions/checkout@v4
-    - name: Build the target directory
-      run: cargo build --release
+    - run: cargo build --release
     - name: Generate the Release Tarball
       run: tar --directory=target/release -cf release.tar.gz $(ls -U target/release/ | head -1)
     - uses: ncipollo/release-action@v1
       with:
         artifacts: "release.tar.gz"
-        tag: v${{ env.PACKAGEV }}
+        tag: v${{ env.VERSION }}

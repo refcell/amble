@@ -5,7 +5,7 @@ resolver = "2"
 
 [workspace.package]
 description = "First class, scalable rust project generator with batteries included."
-version = "0.1.52"
+version = "0.1.53"
 edition = "2021"
 license = "MIT"
 authors = ["refcell"]
@@ -13,7 +13,7 @@ keywords = ["amble", "generator", "template", "scaffold", "cli"]
 repository = "https://github.com/refcell/amble"
 homepage = "https://github.com/refcell/amble"
 exclude = ["**/target", "benches", "tests"]
-include = ["bin/*", "crates/*", ".github", "etc"]
+include = ["bin/*", "crates/*", "etc"]
 
 [workspace.dependencies]
 anyhow = "1.0"
