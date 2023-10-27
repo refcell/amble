@@ -167,7 +167,6 @@ pub fn run() -> Result<()> {
     // we don't need to prompt the user twice if overwrite mode is enabled
     if !dry_run && !overwrite {
         tracing::warn!("Running in non-dry run mode.");
-        tracing::warn!("Files and directories will be created.");
         tracing::warn!("This action may be destructive.");
         if !Confirm::new("Running amble in non-dry mode, are you sure you wish to proceed?")
             .prompt()?
