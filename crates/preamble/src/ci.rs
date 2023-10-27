@@ -36,7 +36,7 @@ pub const WORKFLOWS: [(&str, &str); 7] = [
     ("validate-version.yml", VALIDATE_VERSION_YML),
 ];
 
-/// Copy all [WORKFLOWS] to the project's `.github/workflows/` directory.
+/// Copy all [WORKFLOWS] to the project `.github/workflows/` directory.
 #[instrument(name = "workflows", skip(dir, dry, tree))]
 pub fn write_github_workflows(
     dir: &Path,
