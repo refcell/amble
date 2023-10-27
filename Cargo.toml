@@ -14,6 +14,7 @@ keywords = ["amble", "generator", "template", "scaffold", "cli"]
 repository = "https://github.com/refcell/amble"
 homepage = "https://github.com/refcell/amble"
 exclude = ["**/target", "benches", "tests"]
+include = ["bin/*", "crates/*", ".github", "etc"]
 
 [workspace.dependencies]
 anyhow = "1.0"
