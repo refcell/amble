@@ -1,7 +1,7 @@
-use std::io::Write;
-use std::path::Path;
 use anyhow::Result;
 use ptree::TreeBuilder;
+use std::io::Write;
+use std::path::Path;
 use tracing::instrument;
 
 /// Creates a new cargo binary project in the specified directory.
