@@ -22,7 +22,7 @@ jobs:
         id: previoustag
         uses: "WyriHaximus/github-action-get-previous-tag@v1"
       - name: Extract the git tag version
-        run: echo "VERSION=$(echo ${{ steps.previoustag.outputs.tag }} | sed -n 's/v\([0-9][^;]*\).*/\1/p')" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(echo ${{ steps.previoustag.outputs.tag }} | sed 's/^.*[^0-9]\([0-9]*\.[0-9]*\.[0-9]*\).*$/\1/')" >> $GITHUB_OUTPUT
         id: extract_git_version
       - name: Print VERSION from the previous step
         run: echo ${{ steps.extract_git_version.outputs.VERSION }}
