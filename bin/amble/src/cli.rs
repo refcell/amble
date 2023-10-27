@@ -164,7 +164,7 @@ pub fn run() -> Result<()> {
         }
     }
 
-    // we don't need to prompt the user twice if overwrite mode is enabled
+    // Don't need to prompt the user twice if overwrite mode is enabled
     if !dry_run && !overwrite {
         tracing::warn!("Running in non-dry run mode.");
         tracing::warn!("This action may be destructive.");

@@ -4,7 +4,7 @@ use anyhow::Result;
 use inquire::Confirm;
 use tracing::instrument;
 
-/// Creates a directory if it doesn't exist and the provided `dry_run` flag is not set.
+/// Creates a directory if it doesn't exist and the provided `--dry-run` flag is not set.
 #[macro_export]
 macro_rules! create_dir_gracefully {
     ($dir:expr, $dry_run:expr) => {
