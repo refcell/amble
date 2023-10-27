@@ -19,20 +19,16 @@ pub const MANUAL_TAG_YML: &str = include_str!("../etc/workflows/manual-tag.yml")
 /// Release Github Action Workflow String Literal.
 pub const RELEASE_YML: &str = include_str!("../etc/workflows/release.yml");
 
-/// Tag Github Action Workflow String Literal.
-pub const TAG_YML: &str = include_str!("../etc/workflows/tag.yml");
-
 /// Validate Version Github Action Workflow String Literal.
 pub const VALIDATE_VERSION_YML: &str = include_str!("../etc/workflows/validate-version.yml");
 
 /// An array of Github Action Workflow String Literals.
-pub const WORKFLOWS: [(&str, &str); 7] = [
+pub const WORKFLOWS: [(&str, &str); 6] = [
     ("ci.yml", CI_YML),
     ("audit.yml", AUDIT_YML),
     ("github-release.yml", GITHUB_RELEASE_YML),
     ("manual-tag.yml", MANUAL_TAG_YML),
     ("release.yml", RELEASE_YML),
-    ("tag.yml", TAG_YML),
     ("validate-version.yml", VALIDATE_VERSION_YML),
 ];
 
