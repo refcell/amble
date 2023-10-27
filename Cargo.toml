@@ -1,4 +1,9 @@
-["package"]
+[workspace]
+members = ["bin/*", "crates/*"]
+default-members = ["bin/amble"]
+resolver = "2"
+
+[workspace.package]
 name = "amble"
 description = "First class, scalable rust project generator with batteries included."
 version = "0.1.29"
@@ -6,40 +11,30 @@ edition = "2021"
 license = "MIT"
 authors = ["refcell"]
 keywords = ["amble", "generator", "template", "scaffold", "cli"]
-categories = ["command-line-utilities"]
-homepage = "https://github.com/refcell/amble"
 repository = "https://github.com/refcell/amble"
-exclude = ["benches/", "tests/"]
+homepage = "https://github.com/refcell/amble"
+exclude = ["**/target", "benches", "tests"]
 
-[[bin]]
-bench = false
-path = "src/main.rs"
-name = "amble"
-
-[dependencies]
+[workspace.dependencies]
+anyhow = "1.0"
+inquire = "0.6"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+aho-corasick = "1.1"
 semver = "1.0"
 leon = "2.0"
 regex = "1.10"
 whoami = "1.4"
-anyhow = "1.0"
 ptree = "0.4"
-inquire = "0.6"
-tracing = "0.1"
-tracing-subscriber = "0.3"
-clap = { version = "4.4", features = ["derive"] }
+image = "0.24"
+lice = "0.1"
+chrono = "0.4"
+gitignores = "2.3"
+prettytable = "0.10"
 toml_edit = "0.20"
 tokio = { version = "1.11", features = ["full"] }
 serde_json = "1.0"
 reqwest = { version = "0.11", features = ["blocking", "json"] }
-chrono = "0.4"
-gitignores = "2.3"
-prettytable = "0.10"
-image = "0.24"
-lice = "0.1"
-aho-corasick = "1.1.2"
-
-[dev-dependencies]
-tempfile = "3.8"
 
 [profile.dev]
 opt-level = 1

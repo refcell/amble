@@ -6,7 +6,7 @@ use tracing::instrument;
 
 /// Creates a new gitignore file in the given directory.
 #[instrument(name = "gitignore", skip(dir, dry, tree))]
-pub(crate) fn create(dir: &Path, dry: bool, tree: Option<&mut TreeBuilder>) -> Result<()> {
+pub fn create(dir: &Path, dry: bool, tree: Option<&mut TreeBuilder>) -> Result<()> {
     tracing::info!("Creating a .gitignore file");
     crate::utils::create_dir_gracefully!(dir, dry);
 

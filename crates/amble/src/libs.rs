@@ -6,7 +6,7 @@ use ptree::TreeBuilder;
 use tracing::instrument;
 
 /// Returns the lib contents.
-pub(crate) fn lib_contents() -> &'static str {
+pub fn lib_contents() -> &'static str {
     r#"#![doc = include_str!("../README.md")]
 #![warn(
     missing_debug_implementations,
@@ -36,7 +36,7 @@ mod tests {
 
 /// Creates a new lib crate.
 #[instrument(name = "lib", skip(dir, name, dry, tree))]
-pub(crate) fn create(
+pub fn create(
     dir: &Path,
     name: impl AsRef<str>,
     dry: bool,
@@ -90,7 +90,7 @@ pub(crate) fn create(
 }
 
 /// Writes binary contents to the `Cargo.toml` file located at [file].
-pub(crate) fn fill_cargo(file: &Path, name: &str) -> Result<()> {
+pub fn fill_cargo(file: &Path, name: &str) -> Result<()> {
     let mut manifest = toml_edit::Document::new();
     manifest["package"] = toml_edit::Item::Table(toml_edit::Table::new());
     manifest["package"]["name"] = toml_edit::value(name);

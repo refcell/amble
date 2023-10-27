@@ -7,15 +7,15 @@ use std::path::Path;
 use tracing::instrument;
 
 /// The MIT License.
-pub(crate) const MIT_LICENSE: &str = "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n";
+pub const MIT_LICENSE: &str = "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n";
 
 /// Helper function to build an MIT License with imputed values.
-pub(crate) fn build_mit_license() -> String {
+pub fn build_mit_license() -> String {
     impute_license(MIT_LICENSE)
 }
 
 /// Impute templated license strs with dynamic values.
-pub(crate) fn impute_license(haystack: &str) -> String {
+pub fn impute_license(haystack: &str) -> String {
     let patterns = &["<year>", "[year]", "<fullname>", "[fullname]"];
     let ac = AhoCorasick::builder()
         .ascii_case_insensitive(true)
@@ -35,7 +35,7 @@ pub(crate) fn impute_license(haystack: &str) -> String {
 
 /// Creates a new license file in the given directory.
 #[instrument(name = "license", skip(dir, license, dry, tree))]
-pub(crate) fn create(
+pub fn create(
     dir: &Path,
     license: impl AsRef<str>,
     dry: bool,
@@ -78,7 +78,7 @@ pub(crate) fn create(
 }
 
 /// Fetch a license using [lice].
-pub(crate) async fn fetch_license(name: impl AsRef<str>) -> Result<String> {
+pub async fn fetch_license(name: impl AsRef<str>) -> Result<String> {
     tracing::debug!("Fetching license from lice");
     let license = lice::get(name.as_ref()).await.map_err(|e| {
         tracing::warn!(
