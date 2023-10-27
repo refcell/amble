@@ -21,4 +21,4 @@ tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 clap = { version = "4.4", features = ["derive"] }
 
-preamble = { version = "*", path = "../../crates/preamble" }
+preamble = { version = "0.1", path = "../../crates/preamble" }
