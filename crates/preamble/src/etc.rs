@@ -16,7 +16,7 @@ pub const LOGO_URL: &str =
 pub const FAVICON_URL: &str =
     "https://raw.githubusercontent.com/refcell/amble/main/etc/template/favicon.ico";
 
-/// Creates a new etc directory in the given directory.
+/// Creates a new etc directory in the  specified directory.
 #[instrument(name = "etc", skip(dir, dry, assets, tree))]
 pub fn create(
     dir: &Path,

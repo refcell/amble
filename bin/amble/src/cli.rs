@@ -58,7 +58,7 @@ pub struct Args {
     #[arg(long)]
     without_readme: bool,
 
-    /// Full generates a full project structure including license, ci, gitignore, etc.
+    /// Full generates a full project with license, ci, gitignore, etc included.
     #[arg(long)]
     full: bool,
 
