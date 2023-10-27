@@ -31,6 +31,6 @@ jobs:
         with:
           crate: cargo-workspaces
 
-      - run: cargo ws publish --token ${CRATES_TOKEN} --yes
+      - run: cargo ws publish --token ${CRATES_TOKEN} --yes patch
         env:
           CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
