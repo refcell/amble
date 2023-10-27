@@ -5,29 +5,29 @@ use ptree::TreeBuilder;
 use tracing::instrument;
 
 /// CI Github Action Workflow String Literal.
-pub(crate) const CI_YML: &str = include_str!("../.github/workflows/ci.yml");
+pub const CI_YML: &str = include_str!("../../../.github/workflows/ci.yml");
 
 /// Audit Github Action Workflow String Literal.
-pub(crate) const AUDIT_YML: &str = include_str!("../.github/workflows/audit.yml");
+pub const AUDIT_YML: &str = include_str!("../../../.github/workflows/audit.yml");
 
 /// Github Release Github Action Workflow String Literal.
-pub(crate) const GITHUB_RELEASE_YML: &str = include_str!("../.github/workflows/github-release.yml");
+pub const GITHUB_RELEASE_YML: &str = include_str!("../../../.github/workflows/github-release.yml");
 
 /// Manual Tag Github Action Workflow String Literal.
-pub(crate) const MANUAL_TAG_YML: &str = include_str!("../.github/workflows/manual-tag.yml");
+pub const MANUAL_TAG_YML: &str = include_str!("../../../.github/workflows/manual-tag.yml");
 
 /// Release Github Action Workflow String Literal.
-pub(crate) const RELEASE_YML: &str = include_str!("../.github/workflows/release.yml");
+pub const RELEASE_YML: &str = include_str!("../../../.github/workflows/release.yml");
 
 /// Tag Github Action Workflow String Literal.
-pub(crate) const TAG_YML: &str = include_str!("../.github/workflows/tag.yml");
+pub const TAG_YML: &str = include_str!("../../../.github/workflows/tag.yml");
 
 /// Validate Version Github Action Workflow String Literal.
-pub(crate) const VALIDATE_VERSION_YML: &str =
-    include_str!("../.github/workflows/validate-version.yml");
+pub const VALIDATE_VERSION_YML: &str =
+    include_str!("../../../.github/workflows/validate-version.yml");
 
 /// An array of Github Action Workflow String Literals.
-pub(crate) const WORKFLOWS: [(&str, &str); 7] = [
+pub const WORKFLOWS: [(&str, &str); 7] = [
     ("ci.yml", CI_YML),
     ("audit.yml", AUDIT_YML),
     ("github-release.yml", GITHUB_RELEASE_YML),
@@ -39,7 +39,7 @@ pub(crate) const WORKFLOWS: [(&str, &str); 7] = [
 
 /// Copy all [WORKFLOWS] to the project's `.github/workflows/` directory.
 #[instrument(name = "workflows", skip(dir, dry, tree))]
-pub(crate) fn write_github_workflows(
+pub fn write_github_workflows(
     dir: &Path,
     dry: bool,
     tree: &mut Option<&mut TreeBuilder>,
@@ -59,7 +59,7 @@ pub(crate) fn write_github_workflows(
 
 /// Creates ci workflows for github actions.
 #[instrument(name = "ci", skip(dir, dry, ci, tree))]
-pub(crate) fn create(
+pub fn create(
     dir: &Path,
     dry: bool,
     ci: Option<String>,

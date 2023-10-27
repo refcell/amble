@@ -8,7 +8,7 @@ use tracing::Level;
 ///
 /// # Returns
 /// * `Result<()>` - Ok if successful, Err otherwise.
-pub(crate) fn init_tracing_subscriber(verbosity_level: u8) -> Result<()> {
+pub fn init_tracing_subscriber(verbosity_level: u8) -> Result<()> {
     let subscriber = tracing_subscriber::fmt()
         .with_max_level(match verbosity_level {
             0 => Level::ERROR,

@@ -3,6 +3,8 @@ use clap::{ArgAction, Parser};
 use inquire::Confirm;
 use ptree::TreeBuilder;
 
+use amble::{bins, cargo, ci, etc, gitignore, libs, license, root, telemetry, utils};
+
 /// Command line arguments.
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -142,11 +144,11 @@ pub fn run() -> Result<()> {
     }
 
     if list {
-        crate::root::list_dependencies()?;
+        root::list_dependencies()?;
         return Ok(());
     }
 
-    crate::telemetry::init_tracing_subscriber(v)?;
+    telemetry::init_tracing_subscriber(v)?;
 
     match overwrite {
         true => {
@@ -157,7 +159,7 @@ pub fn run() -> Result<()> {
             }
         }
         false => {
-            crate::utils::check_artifacts(project_dir_path, with_ci || ci_yml.is_some(), dry_run)?;
+            utils::check_artifacts(project_dir_path, with_ci || ci_yml.is_some(), dry_run)?;
             overwrite = true;
         }
     }
@@ -182,19 +184,19 @@ pub fn run() -> Result<()> {
 
     if license || with_license.is_some() {
         let license_type = with_license.as_deref().unwrap_or("mit");
-        crate::license::create(project_dir_path, license_type, dry_run, Some(&mut builder))?;
+        license::create(project_dir_path, license_type, dry_run, Some(&mut builder))?;
     }
 
     if gitignore {
-        crate::gitignore::create(project_dir_path, dry_run, Some(&mut builder))?;
+        gitignore::create(project_dir_path, dry_run, Some(&mut builder))?;
     }
 
     if etc {
-        crate::etc::create(project_dir_path, dry_run, assets, Some(&mut builder))?;
+        etc::create(project_dir_path, dry_run, assets, Some(&mut builder))?;
     }
 
     if !bin && !lib {
-        crate::root::create(
+        root::create(
             project_dir_path,
             &name,
             description.as_ref(),
@@ -204,20 +206,20 @@ pub fn run() -> Result<()> {
             dependencies,
             Some(&mut builder),
         )?;
-        crate::bins::create(
+        bins::create(
             &project_dir_path.join("bin"),
             &name,
             dry_run,
             Some(&mut builder),
         )?;
-        crate::libs::create(
+        libs::create(
             &project_dir_path.join("crates"),
             "common",
             dry_run,
             Some(&mut builder),
         )?;
     } else if bin {
-        crate::cargo::create_bin(
+        cargo::create_bin(
             project_dir_path,
             &name,
             description.as_ref(),
@@ -228,7 +230,7 @@ pub fn run() -> Result<()> {
             Some(&mut builder),
         )?;
     } else if lib {
-        crate::cargo::create_lib(
+        cargo::create_lib(
             project_dir_path,
             &name,
             description.as_ref(),
@@ -241,7 +243,7 @@ pub fn run() -> Result<()> {
     }
 
     if with_ci || ci_yml.is_some() {
-        crate::ci::create(project_dir_path, dry_run, ci_yml, Some(&mut builder))?;
+        ci::create(project_dir_path, dry_run, ci_yml, Some(&mut builder))?;
     }
 
     if dry_run {

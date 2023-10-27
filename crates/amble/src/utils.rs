@@ -15,13 +15,13 @@ macro_rules! create_dir_gracefully {
     };
 }
 
-pub(crate) use create_dir_gracefully;
+pub use create_dir_gracefully;
 
 /// Checks if rust artifacts are present in the given directory.
 /// If `dry_run` is enabled, this method will not error if rust
 /// artifacts are found.
 #[instrument(name = "utils", skip(dir, ci, dry_run))]
-pub(crate) fn check_artifacts(dir: &Path, ci: bool, dry_run: bool) -> Result<()> {
+pub fn check_artifacts(dir: &Path, ci: bool, dry_run: bool) -> Result<()> {
     if dry_run {
         return Ok(());
     }

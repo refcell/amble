@@ -7,7 +7,7 @@ use tracing::instrument;
 
 /// Creates a new bin crate.
 #[instrument(name = "bin", skip(dir, name, dry, tree))]
-pub(crate) fn create(
+pub fn create(
     dir: &Path,
     name: impl AsRef<str>,
     dry: bool,
@@ -53,7 +53,7 @@ pub(crate) fn create(
 }
 
 /// Writes binary contents to the `Cargo.toml` file located at [file].
-pub(crate) fn fill_cargo(file: &Path, name: &str) -> Result<()> {
+pub fn fill_cargo(file: &Path, name: &str) -> Result<()> {
     let mut manifest = toml_edit::Document::new();
     manifest["package"] = toml_edit::Item::Table(toml_edit::Table::new());
     manifest["package"]["name"] = toml_edit::value(name);

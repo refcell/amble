@@ -5,20 +5,20 @@ use std::path::Path;
 use tracing::instrument;
 
 /// The template banner png url.
-pub(crate) const BANNER_URL: &str =
+pub const BANNER_URL: &str =
     "https://raw.githubusercontent.com/refcell/amble/main/etc/template/banner.png";
 
 /// The template logo png url.
-pub(crate) const LOGO_URL: &str =
+pub const LOGO_URL: &str =
     "https://raw.githubusercontent.com/refcell/amble/main/etc/template/logo.png";
 
 /// The template favicon ico url.
-pub(crate) const FAVICON_URL: &str =
+pub const FAVICON_URL: &str =
     "https://raw.githubusercontent.com/refcell/amble/main/etc/template/favicon.ico";
 
 /// Creates a new etc directory in the given directory.
 #[instrument(name = "etc", skip(dir, dry, assets, tree))]
-pub(crate) fn create(
+pub fn create(
     dir: &Path,
     dry: bool,
     assets: bool,

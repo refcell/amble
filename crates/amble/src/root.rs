@@ -7,12 +7,12 @@ use ptree::TreeBuilder;
 use tracing::instrument;
 
 /// The template readme included as a string literal from the `etc/` directory.
-pub(crate) const TEMPLATE_README: &str = include_str!("../etc/README.md");
+pub const TEMPLATE_README: &str = include_str!("../../../etc/README.md");
 
 /// Creates new top-level workspace artifacts at the given directory &[Path].
 #[allow(clippy::too_many_arguments)]
 #[instrument(name = "workspace", skip(dir, name, description, dry, author, tree))]
-pub(crate) fn create(
+pub fn create(
     dir: &Path,
     name: impl AsRef<str> + std::fmt::Display,
     description: Option<impl AsRef<str> + std::fmt::Display>,
@@ -56,7 +56,7 @@ pub(crate) fn create(
 }
 
 /// Attempts to retrieve the current git username.
-pub(crate) fn try_git_username() -> Option<String> {
+pub fn try_git_username() -> Option<String> {
     match std::process::Command::new("git")
         .arg("config")
         .arg("--get")
@@ -76,7 +76,7 @@ pub(crate) fn try_git_username() -> Option<String> {
 }
 
 /// Returns the current username.
-pub(crate) fn get_current_username(authors: &Option<Vec<String>>) -> String {
+pub fn get_current_username(authors: &Option<Vec<String>>) -> String {
     match authors {
         Some(v) => v[0].clone(),
         None => match try_git_username() {
@@ -87,7 +87,7 @@ pub(crate) fn get_current_username(authors: &Option<Vec<String>>) -> String {
 }
 
 /// Dynamically gets the authors.
-pub(crate) fn get_authors(authors: Option<Vec<String>>) -> toml_edit::Item {
+pub fn get_authors(authors: Option<Vec<String>>) -> toml_edit::Item {
     let mut array = toml_edit::Array::default();
     match authors {
         Some(v) => v.into_iter().for_each(|a| array.push(a)),
@@ -100,7 +100,7 @@ pub(crate) fn get_authors(authors: Option<Vec<String>>) -> toml_edit::Item {
 }
 
 /// Fetch a packages version using bash commands and `cargo search`.
-pub(crate) fn fetch_version(c: &str) -> Option<String> {
+pub fn fetch_version(c: &str) -> Option<String> {
     let cargo_search_output = std::process::Command::new("cargo")
         .arg("search")
         .arg(c)
@@ -121,7 +121,7 @@ pub(crate) fn fetch_version(c: &str) -> Option<String> {
 }
 
 /// Writes binary contents to the `Cargo.toml` file located at [file].
-pub(crate) fn fill_cargo(
+pub fn fill_cargo(
     file: &Path,
     author: Option<Vec<String>>,
     name: &str,
@@ -174,7 +174,7 @@ pub(crate) fn fill_cargo(
 }
 
 /// Lists the default dependencies.
-pub(crate) fn list_dependencies() -> Result<()> {
+pub fn list_dependencies() -> Result<()> {
     let mut table = prettytable::Table::new();
     table.add_row(prettytable::Row::new(vec![
         prettytable::Cell::new("Dependency"),
@@ -213,10 +213,7 @@ pub(crate) fn list_dependencies() -> Result<()> {
 }
 
 /// Add dependencies to the manifest.
-pub(crate) fn add_workspace_deps(
-    manifest: &mut toml_edit::Document,
-    overrides: Option<Vec<String>>,
-) {
+pub fn add_workspace_deps(manifest: &mut toml_edit::Document, overrides: Option<Vec<String>>) {
     let default_inline_dependencies = vec![
         ("anyhow".to_string(), "1.0".to_string()),
         ("inquire".to_string(), "0.6.2".to_string()),
@@ -247,7 +244,7 @@ pub(crate) fn add_workspace_deps(
 }
 
 /// Adds inline dependencies to the manifest.
-pub(crate) fn add_inline_deps(manifest: &mut toml_edit::Document, deps: Vec<(String, String)>) {
+pub fn add_inline_deps(manifest: &mut toml_edit::Document, deps: Vec<(String, String)>) {
     let deps_table = manifest["workspace.dependencies"].as_table_mut().unwrap();
     for (dep, default_version) in deps {
         let version = fetch_version(&dep).unwrap_or_else(|| default_version.to_string());
@@ -257,14 +254,14 @@ pub(crate) fn add_inline_deps(manifest: &mut toml_edit::Document, deps: Vec<(Str
 
 /// Removes quotes from table keys.
 /// e.g. ["workspace.package"] -> [workspace.package"]
-pub(crate) fn remove_table_quotes(s: String) -> String {
+pub fn remove_table_quotes(s: String) -> String {
     let re = regex::Regex::new(r#"\["(.*\..*)"\]"#).unwrap_or_else(|_| panic!("Invalid regex"));
     let result = re.replace_all(&s, |caps: &regex::Captures<'_>| format!("[{}]", &caps[1]));
     result.to_string()
 }
 
 /// Reads the template readme file and returns the formatted string contents.
-pub(crate) fn format_template_readme(
+pub fn format_template_readme(
     project_name: &str,
     project_description: &str,
     project_owner: &str,

@@ -8,7 +8,7 @@ use tracing::instrument;
 /// Creates a new cargo binary project in the given directory.
 #[allow(clippy::too_many_arguments)]
 #[instrument(name = "bin", skip(dir, name, description, dry, bare, author, tree))]
-pub(crate) fn create_bin(
+pub fn create_bin(
     dir: &Path,
     name: impl AsRef<str> + std::fmt::Display,
     description: Option<impl AsRef<str> + std::fmt::Display>,
@@ -53,7 +53,7 @@ pub(crate) fn create_bin(
 }
 
 /// Writes to the binary `Cargo.toml` file located at [file].
-pub(crate) fn write_cargo_bin(
+pub fn write_cargo_bin(
     file: &Path,
     author: Option<Vec<String>>,
     name: &str,
@@ -83,7 +83,7 @@ pub(crate) fn write_cargo_bin(
 }
 
 /// Add dependencies to the manifest.
-pub(crate) fn add_inline_deps(manifest: &mut toml_edit::Document, overrides: Option<Vec<String>>) {
+pub fn add_inline_deps(manifest: &mut toml_edit::Document, overrides: Option<Vec<String>>) {
     let default_inline_dependencies = vec![
         ("anyhow".to_string(), "1.0".to_string()),
         ("inquire".to_string(), "0.6".to_string()),
@@ -121,7 +121,7 @@ pub(crate) fn add_inline_deps(manifest: &mut toml_edit::Document, overrides: Opt
 /// Creates a new cargo library project in the given directory.
 #[allow(clippy::too_many_arguments)]
 #[instrument(name = "lib", skip(dir, name, description, dry, bare, author, tree))]
-pub(crate) fn create_lib(
+pub fn create_lib(
     dir: &Path,
     name: impl AsRef<str> + std::fmt::Display,
     description: Option<impl AsRef<str> + std::fmt::Display>,
