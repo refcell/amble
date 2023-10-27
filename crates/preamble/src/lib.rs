@@ -1,4 +1,14 @@
-#![doc = include_str!("../../../README.md")]
+/*!
+A library for building and managing rust workspaces with batteries included.
+Preamble is used by [amble](https://crates.io/crates/amble) for its core
+functionality.
+
+# Overview
+
+todo
+
+*/
+
 #![doc(
     html_logo_url = "https://raw.githubusercontent.com/refcell/amble/main/etc/logo.png",
     html_favicon_url = "https://raw.githubusercontent.com/refcell/amble/main/etc/favicon.ico",
