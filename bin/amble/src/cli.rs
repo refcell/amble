@@ -9,7 +9,7 @@ use preamble::{bins, cargo, ci, etc, gitignore, libs, license, root, telemetry, 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
-    /// Verbosity level (0-4).
+    /// Verbosity level (0-4). Default: 0.
     #[arg(long, short, action = ArgAction::Count, default_value = "0")]
     v: u8,
 
