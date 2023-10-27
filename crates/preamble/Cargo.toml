@@ -7,7 +7,7 @@ authors = { workspace = true }
 license = { workspace = true }
 repository = { workspace = true }
 homepage = { workspace = true }
-include = ["../../etc", "../../.github"]
+include = ["src/", "../../etc", "../../.github"]
 
 [lib]
 path = "src/lib.rs"
