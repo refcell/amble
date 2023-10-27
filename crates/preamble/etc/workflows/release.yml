@@ -26,11 +26,6 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Install cargo-workspaces from crates.io
-        uses: baptiste0928/cargo-install@v2
-        with:
-          crate: cargo-workspaces
-
-      - run: cargo ws publish --token ${CRATES_TOKEN} --yes
+      - run: cargo publish --token ${CRATES_TOKEN}
         env:
           CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
