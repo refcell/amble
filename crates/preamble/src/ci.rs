@@ -23,8 +23,7 @@ pub const RELEASE_YML: &str = include_str!("../etc/workflows/release.yml");
 pub const TAG_YML: &str = include_str!("../etc/workflows/tag.yml");
 
 /// Validate Version Github Action Workflow String Literal.
-pub const VALIDATE_VERSION_YML: &str =
-    include_str!("../etc/workflows/validate-version.yml");
+pub const VALIDATE_VERSION_YML: &str = include_str!("../etc/workflows/validate-version.yml");
 
 /// An array of Github Action Workflow String Literals.
 pub const WORKFLOWS: [(&str, &str); 7] = [

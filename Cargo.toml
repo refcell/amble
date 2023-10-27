@@ -4,7 +4,6 @@ default-members = ["bin/amble"]
 resolver = "2"
 
 [workspace.package]
-name = "amble"
 description = "First class, scalable rust project generator with batteries included."
 version = "0.1.39"
 edition = "2021"
