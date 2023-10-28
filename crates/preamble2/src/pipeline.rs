@@ -25,8 +25,6 @@ pub enum PipelineStatus {
     Committed,
 }
 
-
-
 impl Pipeline {
     /// Constructs a new PipelineBuilder.
     pub fn new() -> Self {
