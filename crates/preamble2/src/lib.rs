@@ -11,12 +11,27 @@ Contains a number of modules for building rust workspaces with batteries include
 
 # Usage
 
+The core `preamble2`
+
 ```ignore,rust
-use preamble2::telemetry;
+use preamble2::Pipeline;
 
 fn main() {
-    // Initialize the tracing subscriber with default 0 verbosity (only errors)
-    telemetry::init_default_tracing().unwrap();
+    // Initializes a tracing subscriber with 0 verbosity
+    // (only prints errors)
+    preamble2::init_default_tracing().unwrap();
+
+    let mut pipeline = Pipeline::default();
+    pipeline.with_root();
+    pipeline.dry();
+
+
+    pipeline.execute().unwrap();
+
+    // Commit will be a no-op here since we
+    // set the pipeline to be in dry run mode
+    pipeline.commit().unwrap();
+    tracing::info!("Pipeline finished successfully");
 }
 ```
 */
@@ -40,12 +55,14 @@ doc_comment::doctest!("../README.md");
 // =============================================================================
 
 pub use crate::{
-    pipeline::Pipeline,
+    builder::PipelineBuilder,
+    pipeline::{Pipeline, PipelineStatus},
     telemetry::{
         init_default_tracing, init_tracing_subscriber, init_tracing_subscriber_with_env, Level,
     },
 };
 
+pub mod builder;
 pub mod pipeline;
 pub mod telemetry;
 
