@@ -17,7 +17,8 @@ BUILD_PATH = "target"
 ifeq ($(OS),Windows_NT)
     FEATURES ?=
 else
-    FEATURES ?= jemalloc
+    # FEATURES ?= jemalloc
+    FEATURES ?=
 endif
 
 # Cargo profile for builds. Default is for local builds, CI uses an override.
