@@ -4,11 +4,6 @@
 
 GIT_TAG ?= $(shell git describe --tags --abbrev=0)
 BIN_DIR = "dist/bin"
-
-MDBX_PATH = "crates/storage/libmdbx-rs/mdbx-sys/libmdbx"
-DB_TOOLS_DIR = "db-tools"
-FULL_DB_TOOLS_DIR := $(shell pwd)/$(DB_TOOLS_DIR)/
-
 BUILD_PATH = "target"
 
 # List of features to use when building.
