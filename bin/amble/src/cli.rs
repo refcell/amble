@@ -38,7 +38,7 @@ pub struct Args {
     #[arg(long, short)]
     with_ci: bool,
 
-    /// Copy the specified ci workflow file to the project's `.github/workflows/` directory.
+    /// Copy the specified workflow file to the project's `.github/workflows/` directory.
     #[arg(long, short)]
     ci_yml: Option<String>,
 

@@ -22,6 +22,6 @@ jobs:
       - uses: baptiste0928/cargo-install@v2
         with:
           crate: cargo-release
-      - run: cargo release --execute 
+      - run: cargo release --execute --no-confirm 
         env:
           CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
