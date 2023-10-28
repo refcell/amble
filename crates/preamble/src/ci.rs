@@ -55,7 +55,7 @@ pub fn write_github_workflows(
     Ok(())
 }
 
-/// Creates ci workflows for github actions.
+/// Creates github action ci workflows.
 #[instrument(name = "ci", skip(dir, dry, ci, tree))]
 pub fn create(
     dir: &Path,
