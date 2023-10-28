@@ -25,20 +25,7 @@ pub enum PipelineStatus {
     Committed,
 }
 
-/// Declarative macro that derives all Pipeline builder methods on Pipeline as
-/// associated functions. These methods pass through to creating a new builder,
-/// and then calling the builder's method. Since the builder methods consume and
-/// return itself, they can be chained. Effectively, this allows the pipeline to
-/// be called like the builder itself.
-///
-/// # Example
-///
-/// ```rust
-/// use preamble2::Pipeline;
-/// let mut pipeline = Pipeline::with_name("example").dry_run(true).build();
-/// pipeline.execute().unwrap();
-/// pipeline.commit().unwrap();
-/// ```
+
 
 impl Pipeline {
     /// Constructs a new PipelineBuilder.
@@ -69,10 +56,23 @@ impl Pipeline {
 
 /// Passthrough
 ///
-/// The passthrough declarative macro generates associated functions
-/// on the [`Pipeline`] struct that construct a default [`PipelineBuilder`]
-/// and call the corresponding builder method, returning the newly created
-/// [`PipelineBuilder`].
+/// Declarative macro that derives [`PipelineBuilder`] methods on Pipeline as
+/// associated functions. These methods "pass through" to the builder by
+/// instantiating a default [`PipelineBuilder`] and calling the corresponding
+/// builder method.
+///
+/// Since the [`PipelineBuilder`] mutator methods consume and return the
+/// builder itself, the methods can be chained. Effectively, this allows the
+/// [`Pipeline`] to be called like the builder itself.
+///
+/// # Example
+///
+/// ```rust
+/// use preamble2::Pipeline;
+/// let mut pipeline = Pipeline::with_name("example").dry_run(true).build();
+/// pipeline.execute().unwrap();
+/// pipeline.commit().unwrap();
+/// ```
 #[macro_export]
 macro_rules! passthrough {
     (
