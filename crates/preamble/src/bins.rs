@@ -1,5 +1,4 @@
-use std::io::Write;
-use std::path::Path;
+use std::{io::Write, path::Path};
 
 use anyhow::Result;
 use ptree::TreeBuilder;
@@ -22,19 +21,15 @@ pub fn create(
 
     crate::utils::create_dir_gracefully!(src_path_buf, dry);
 
-    tree.as_deref_mut()
-        .map(|t| t.begin_child("bin".to_string()));
-    tree.as_deref_mut()
-        .map(|t| t.begin_child(name.as_ref().to_string()));
+    tree.as_deref_mut().map(|t| t.begin_child("bin".to_string()));
+    tree.as_deref_mut().map(|t| t.begin_child(name.as_ref().to_string()));
 
     if !dry {
         tracing::debug!("Writing {:?}", cargo_toml_path_buf);
         fill_cargo(&cargo_toml_path_buf, name.as_ref())?;
     }
-    tree.as_deref_mut()
-        .map(|t| t.add_empty_child("Cargo.toml".to_string()));
-    tree.as_deref_mut()
-        .map(|t| t.begin_child("src".to_string()));
+    tree.as_deref_mut().map(|t| t.add_empty_child("Cargo.toml".to_string()));
+    tree.as_deref_mut().map(|t| t.begin_child("src".to_string()));
 
     if !dry {
         tracing::debug!("Writing {:?}", main_rs_path_buf);
@@ -42,8 +37,7 @@ pub fn create(
         let main_contents = "fn main() {\n    println!(\"Hello World!\");\n}\n";
         main_rs.write_all(main_contents.as_bytes())?;
     }
-    tree.as_deref_mut()
-        .map(|t| t.add_empty_child("main.rs".to_string()));
+    tree.as_deref_mut().map(|t| t.add_empty_child("main.rs".to_string()));
 
     tree.as_deref_mut().map(|t| t.end_child()); // <- src/
     tree.as_deref_mut().map(|t| t.end_child()); // <- <name>/
@@ -96,8 +90,7 @@ pub fn fill_cargo(file: &Path, name: &str) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs::File;
-    use std::io::Read;
+    use std::{fs::File, io::Read};
     use tempfile::tempdir;
 
     #[test]

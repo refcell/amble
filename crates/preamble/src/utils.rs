@@ -56,14 +56,7 @@ pub fn check_artifacts(dir: &Path, ci: bool, dry_run: bool) -> Result<()> {
         }
         prompted = true;
     }
-    if !prompted
-        && ci
-        && dir
-            .join(".github")
-            .join("workflows")
-            .join("ci.yml")
-            .exists()
-    {
+    if !prompted && ci && dir.join(".github").join("workflows").join("ci.yml").exists() {
         tracing::warn!("Rust artifacts detected in the project directory");
         if !Confirm::new("[WARNING] Found conflicting files. Are you sure you wish to proceed?")
             .prompt()?

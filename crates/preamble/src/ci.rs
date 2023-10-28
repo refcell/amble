@@ -50,8 +50,7 @@ pub fn write_github_workflows(
             tracing::debug!("Writing {:?}", workflow_path_buf);
             std::fs::write(&workflow_path_buf, workflow_contents)?;
         }
-        tree.as_deref_mut()
-            .map(|t| t.add_empty_child(workflow_name.to_string()));
+        tree.as_deref_mut().map(|t| t.add_empty_child(workflow_name.to_string()));
     }
     Ok(())
 }
@@ -70,21 +69,15 @@ pub fn create(
     let ci_yml_path_buf = workflows_dir.join("ci.yml");
     crate::utils::create_dir_gracefully!(&workflows_dir, dry);
 
-    tree.as_deref_mut()
-        .map(|t| t.begin_child(".github".to_string()));
-    tree.as_deref_mut()
-        .map(|t| t.begin_child("workflows".to_string()));
+    tree.as_deref_mut().map(|t| t.begin_child(".github".to_string()));
+    tree.as_deref_mut().map(|t| t.begin_child("workflows".to_string()));
 
     if ci.is_none() {
         tracing::debug!("Writing {:?}", ci_yml_path_buf);
         write_github_workflows(&workflows_dir, dry, &mut tree)?;
     }
     if !dry && ci.is_some() {
-        tracing::debug!(
-            "Copying {:?} to {:?}",
-            ci.as_ref().unwrap(),
-            ci_yml_path_buf
-        );
+        tracing::debug!("Copying {:?} to {:?}", ci.as_ref().unwrap(), ci_yml_path_buf);
         std::fs::copy(ci.as_ref().unwrap(), ci_yml_path_buf)?;
         tree.as_deref_mut().map(|t| t.add_empty_child(ci.unwrap()));
     }

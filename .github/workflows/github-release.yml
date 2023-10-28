@@ -73,11 +73,6 @@ jobs:
         run: |
           mkdir artifacts
           mv target/${{ matrix.arch }}/${{ matrix.profile }}/* ./artifacts
-      - name: Move cross-compiled binary (Windows)
-        if: matrix.arch == 'x86_64-pc-windows-gnu'
-        run: |
-          mkdir artifacts
-          mv target/${{ matrix.arch }}/${{ matrix.profile }}/* ./artifacts
       - name: Create artifacts
         run: tar --directory=artifacts -czf release-${{ env.VERSION }}-${{ matrix.arch }}.tar.gz $(ls -U artifacts/ | head -1) 
         shell: bash

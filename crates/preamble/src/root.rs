@@ -1,6 +1,5 @@
 use leon::Template;
-use std::io::Write;
-use std::path::Path;
+use std::{io::Write, path::Path};
 
 use anyhow::Result;
 use ptree::TreeBuilder;
@@ -24,9 +23,8 @@ pub fn create(
 ) -> Result<()> {
     tracing::info!("Creating top level workspace artifacts for {}", name);
 
-    let description = description
-        .map(|s| s.as_ref().to_string())
-        .unwrap_or(format!("{} workspace", name));
+    let description =
+        description.map(|s| s.as_ref().to_string()).unwrap_or(format!("{} workspace", name));
 
     if !dry && !no_readme_override {
         tracing::debug!("Writing {:?}", dir.join("README.md"));
@@ -36,19 +34,12 @@ pub fn create(
         file.write_all(templated_readme.as_bytes())?;
     }
     if !no_readme_override {
-        tree.as_deref_mut()
-            .map(|t| t.add_empty_child("README.md".to_string()));
+        tree.as_deref_mut().map(|t| t.add_empty_child("README.md".to_string()));
     }
 
     if !dry {
         tracing::debug!("Writing {:?}", dir.join("Cargo.toml"));
-        fill_cargo(
-            &dir.join("Cargo.toml"),
-            author,
-            name.as_ref(),
-            &description,
-            overrides,
-        )?;
+        fill_cargo(&dir.join("Cargo.toml"), author, name.as_ref(), &description, overrides)?;
     }
     tree.map(|t| t.add_empty_child("Cargo.toml".to_string()));
 
@@ -57,12 +48,7 @@ pub fn create(
 
 /// Attempts to retrieve the current git username.
 pub fn try_git_username() -> Option<String> {
-    match std::process::Command::new("git")
-        .arg("config")
-        .arg("--get")
-        .arg("user.name")
-        .output()
-    {
+    match std::process::Command::new("git").arg("config").arg("--get").arg("user.name").output() {
         Ok(output) => {
             if output.status.success() {
                 let name = String::from_utf8(output.stdout).ok()?;
@@ -101,22 +87,16 @@ pub fn get_authors(authors: Option<Vec<String>>) -> toml_edit::Item {
 
 /// Fetch a packages version using bash commands and `cargo search`.
 pub fn fetch_version(c: &str) -> Option<String> {
-    let cargo_search_output = std::process::Command::new("cargo")
-        .arg("search")
-        .arg(c)
-        .output()
-        .ok()?;
+    let cargo_search_output =
+        std::process::Command::new("cargo").arg("search").arg(c).output().ok()?;
     if !cargo_search_output.status.success() {
         tracing::warn!("Failed to run `cargo search {}` command", c);
         return None;
     }
     let output_str = String::from_utf8(cargo_search_output.stdout).ok()?;
-    let anyhow_line = output_str
-        .lines()
-        .find(|l| l.starts_with(&format!("{} = ", c)))?;
-    let version = anyhow_line
-        .strip_prefix(&format!("{} = \"", c))
-        .and_then(|s| s.split('"').next());
+    let anyhow_line = output_str.lines().find(|l| l.starts_with(&format!("{} = ", c)))?;
+    let version =
+        anyhow_line.strip_prefix(&format!("{} = \"", c)).and_then(|s| s.split('"').next());
     version.map(|s| s.to_string())
 }
 
@@ -278,8 +258,7 @@ pub fn format_template_readme(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs::File;
-    use std::io::Read;
+    use std::{fs::File, io::Read};
     use tempfile::tempdir;
 
     #[test]
@@ -405,17 +384,8 @@ debug = true
     fn test_create() {
         let dir = tempdir().unwrap();
         let dir_path_buf = dir.path().to_path_buf();
-        create(
-            &dir_path_buf,
-            "example",
-            Some("example workspace"),
-            false,
-            false,
-            None,
-            None,
-            None,
-        )
-        .unwrap();
+        create(&dir_path_buf, "example", Some("example workspace"), false, false, None, None, None)
+            .unwrap();
         assert!(dir_path_buf.exists());
         assert!(dir_path_buf.join("Cargo.toml").exists());
         assert!(dir_path_buf.join("README.md").exists());
@@ -425,17 +395,8 @@ debug = true
     fn test_create_dry_run() {
         let dir = tempdir().unwrap();
         let dir_path_buf = dir.path().to_path_buf();
-        create(
-            &dir_path_buf,
-            "example",
-            Some("example workspace"),
-            true,
-            false,
-            None,
-            None,
-            None,
-        )
-        .unwrap();
+        create(&dir_path_buf, "example", Some("example workspace"), true, false, None, None, None)
+            .unwrap();
         assert!(!dir_path_buf.join("Cargo.toml").exists());
         assert!(!dir_path_buf.join("README.md").exists());
     }
