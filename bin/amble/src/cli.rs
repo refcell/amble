@@ -30,7 +30,7 @@ pub struct Args {
     bare: bool,
 
     /// The project name.
-    /// This will be used for the binary application name.
+    /// This is used for the default binary application name.
     #[arg(long, short, default_value = "example")]
     name: String,
 
