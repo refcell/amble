@@ -1,0 +1,39 @@
+[package]
+name = "preamble2"
+description = "Modern rust project manager library re-written from the ground up."
+# version = { workspace = true }
+version = "0.0.1"
+edition = { workspace = true }
+authors = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
+homepage = { workspace = true }
+include = ["src/", "etc/"]
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+inquire = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+aho-corasick = { workspace = true }
+semver = { workspace = true }
+leon = { workspace = true }
+regex = { workspace = true }
+whoami = { workspace = true }
+ptree = { workspace = true }
+image = { workspace = true }
+lice = { workspace = true }
+chrono = { workspace = true }
+gitignores = { workspace = true }
+prettytable = { workspace = true }
+toml_edit = { workspace = true }
+tokio = { workspace = true }
+serde_json = { workspace = true }
+reqwest = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3.8"
+doc-comment = "0.3"

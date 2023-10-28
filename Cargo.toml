@@ -19,7 +19,7 @@ include = ["bin/*", "crates/*", "etc"]
 anyhow = "1.0"
 inquire = "0.6"
 tracing = "0.1"
-tracing-subscriber = "0.3"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 aho-corasick = "1.1"
 semver = "1.0"
 leon = "2.0"
