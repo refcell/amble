@@ -1,7 +1,14 @@
 use anyhow::Result;
 use tracing::Level;
 
-/// Initializes the tracing subscriber
+/// Initializes the tracing subscriber.
+///
+/// The verbosity level determines the maximum level of tracing.
+/// - 0: ERROR
+/// - 1: WARN
+/// - 2: INFO
+/// - 3: DEBUG
+/// - 4+: TRACE
 ///
 /// # Arguments
 /// * `verbosity_level` - The verbosity level (0-4)
