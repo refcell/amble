@@ -5,12 +5,18 @@ functionality.
 
 # Overview
 
-todo
+Contains a number of modules for building rust workspaces with batteries included.
 
 # Usage
 
+```ignore,rust
+use preamble::telemetry;
 
-
+fn main() {
+    // Initialize the tracing subscriber with 0 verbosity (only errors)
+    telemetry::init_tracing_subscriber(0).unwrap();
+}
+```
 */
 
 #![doc(

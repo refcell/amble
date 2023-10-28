@@ -134,7 +134,6 @@ mod tests {
         fill_cargo(&cargo_toml_path_buf, proj_name).unwrap();
         assert!(cargo_toml_path_buf.exists());
 
-        // Validate the cargo.toml file contents
         let mut cargo_toml = File::open(cargo_toml_path_buf).unwrap();
         let mut cargo_toml_contents = String::new();
         cargo_toml.read_to_string(&mut cargo_toml_contents).unwrap();
