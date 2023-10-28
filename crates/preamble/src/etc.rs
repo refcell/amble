@@ -26,8 +26,7 @@ pub fn create(
 ) -> Result<()> {
     tracing::info!("Creating etc directory");
     crate::utils::create_dir_gracefully!(dir.join("etc"), dry);
-    tree.as_deref_mut()
-        .map(|t| t.begin_child("etc".to_string()));
+    tree.as_deref_mut().map(|t| t.begin_child("etc".to_string()));
     if !dry && assets {
         tracing::debug!("Copying assets to etc directory");
         let banner_img_bytes = reqwest::blocking::get(BANNER_URL)?.bytes()?;
@@ -39,12 +38,9 @@ pub fn create(
         let favicon_img_bytes = reqwest::blocking::get(FAVICON_URL)?.bytes()?;
         let image = image::load_from_memory_with_format(&favicon_img_bytes, ImageFormat::Ico)?;
         image.save_with_format(dir.join("etc").join("favicon.ico"), ImageFormat::Ico)?;
-        tree.as_deref_mut()
-            .map(|t| t.add_empty_child("banner.png".to_string()));
-        tree.as_deref_mut()
-            .map(|t| t.add_empty_child("logo.png".to_string()));
-        tree.as_deref_mut()
-            .map(|t| t.add_empty_child("favicon.ico".to_string()));
+        tree.as_deref_mut().map(|t| t.add_empty_child("banner.png".to_string()));
+        tree.as_deref_mut().map(|t| t.add_empty_child("logo.png".to_string()));
+        tree.as_deref_mut().map(|t| t.add_empty_child("favicon.ico".to_string()));
     }
     tree.map(|t| t.end_child());
     Ok(())

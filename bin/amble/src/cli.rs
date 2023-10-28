@@ -205,18 +205,8 @@ pub fn run() -> Result<()> {
             dependencies,
             Some(&mut builder),
         )?;
-        bins::create(
-            &project_dir_path.join("bin"),
-            &name,
-            dry_run,
-            Some(&mut builder),
-        )?;
-        libs::create(
-            &project_dir_path.join("crates"),
-            "common",
-            dry_run,
-            Some(&mut builder),
-        )?;
+        bins::create(&project_dir_path.join("bin"), &name, dry_run, Some(&mut builder))?;
+        libs::create(&project_dir_path.join("crates"), "common", dry_run, Some(&mut builder))?;
     } else if bin {
         cargo::create_bin(
             project_dir_path,

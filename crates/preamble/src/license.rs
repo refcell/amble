@@ -2,8 +2,7 @@ use aho_corasick::AhoCorasick;
 use anyhow::Result;
 use chrono::Datelike;
 use ptree::TreeBuilder;
-use std::io::Write;
-use std::path::Path;
+use std::{io::Write, path::Path};
 use tracing::instrument;
 
 /// The MIT License.
@@ -17,10 +16,7 @@ pub fn build_mit_license() -> String {
 /// Impute templated license strs with dynamic values.
 pub fn impute_license(haystack: &str) -> String {
     let patterns = &["<year>", "[year]", "<fullname>", "[fullname]"];
-    let ac = AhoCorasick::builder()
-        .ascii_case_insensitive(true)
-        .build(patterns)
-        .unwrap();
+    let ac = AhoCorasick::builder().ascii_case_insensitive(true).build(patterns).unwrap();
     let mut result = String::new();
     ac.replace_all_with(haystack, &mut result, |mat, _, dst| {
         match mat.pattern().as_usize() {
@@ -48,11 +44,7 @@ pub fn create(
     let license = match tokio::runtime::Runtime::new()?.block_on(fetch_license(license.as_ref())) {
         Ok(license) => license
             .replacen("<year>", &chrono::Utc::now().year().to_string(), 1)
-            .replacen(
-                "<copyright holders>",
-                &crate::root::get_current_username(&None),
-                1,
-            ),
+            .replacen("<copyright holders>", &crate::root::get_current_username(&None), 1),
         Err(_) => {
             if !inquire::Confirm::new(&format!(
                 "Failed to query for license \"{}\", do you want to proceed with the MIT License instead?",
@@ -81,23 +73,17 @@ pub fn create(
 pub async fn fetch_license(name: impl AsRef<str>) -> Result<String> {
     tracing::debug!("Fetching license from lice");
     let license = lice::get(name.as_ref()).await.map_err(|e| {
-        tracing::warn!(
-            "Failed to find license \"{}\" in SPDX database",
-            name.as_ref()
-        );
+        tracing::warn!("Failed to find license \"{}\" in SPDX database", name.as_ref());
         anyhow::anyhow!(e)
     })?;
     tracing::debug!("Fetched license from lice");
-    license
-        .license_text
-        .ok_or(anyhow::anyhow!("no license text!"))
+    license.license_text.ok_or(anyhow::anyhow!("no license text!"))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs::File;
-    use std::io::Read;
+    use std::{fs::File, io::Read};
     use tempfile::tempdir;
 
     #[tokio::test]
@@ -106,11 +92,7 @@ mod tests {
             .await
             .unwrap()
             .replacen("<year>", &chrono::Utc::now().year().to_string(), 1)
-            .replacen(
-                "<copyright holders>",
-                &crate::root::get_current_username(&None),
-                1,
-            );
+            .replacen("<copyright holders>", &crate::root::get_current_username(&None), 1);
         assert_eq!(
             license.replace("\n\n", " ").replace("\n", " "),
             build_mit_license().replace("\n\n", " ").replace("\n", " ")

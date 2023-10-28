@@ -1,7 +1,6 @@
 use anyhow::Result;
 use ptree::TreeBuilder;
-use std::io::Write;
-use std::path::Path;
+use std::{io::Write, path::Path};
 use tracing::instrument;
 
 /// Creates a new gitignore file in the given directory.
@@ -12,10 +11,8 @@ pub fn create(dir: &Path, dry: bool, tree: Option<&mut TreeBuilder>) -> Result<(
 
     if !dry {
         tracing::debug!("Writing .gitignore to {:?}", dir.join(".gitignore"));
-        let mut file = std::fs::File::options()
-            .append(true)
-            .create(true)
-            .open(dir.join(".gitignore"))?;
+        let mut file =
+            std::fs::File::options().append(true).create(true).open(dir.join(".gitignore"))?;
         let rust_gitignore = gitignores::Root::Rust.to_string();
         file.write_all(rust_gitignore.as_bytes())?;
     }

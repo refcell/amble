@@ -1,7 +1,6 @@
 use anyhow::Result;
 use ptree::TreeBuilder;
-use std::io::Write;
-use std::path::Path;
+use std::{io::Write, path::Path};
 use tracing::instrument;
 
 /// Creates a new cargo binary project in the specified directory.
@@ -34,19 +33,14 @@ pub fn create_bin(
             &dir.join("Cargo.toml"),
             author,
             name.as_ref(),
-            &description
-                .map(|d| d.to_string())
-                .unwrap_or_else(|| "A new binary crate".to_string()),
+            &description.map(|d| d.to_string()).unwrap_or_else(|| "A new binary crate".to_string()),
             overrides,
         )?;
         tracing::debug!("Finished filling cargo contents in {:?}", dir);
     }
-    tree.as_deref_mut()
-        .map(|t| t.add_empty_child("Cargo.toml".to_string()));
-    tree.as_deref_mut()
-        .map(|t| t.begin_child("src".to_string()));
-    tree.as_deref_mut()
-        .map(|t| t.add_empty_child("main.rs".to_string()));
+    tree.as_deref_mut().map(|t| t.add_empty_child("Cargo.toml".to_string()));
+    tree.as_deref_mut().map(|t| t.begin_child("src".to_string()));
+    tree.as_deref_mut().map(|t| t.add_empty_child("main.rs".to_string()));
     tree.map(|t| t.end_child());
     Ok(())
 }
@@ -166,14 +160,10 @@ pub fn create_lib(
         tracing::debug!("Writing {:?}", readme_path_buf);
         std::fs::write(&readme_path_buf, format!("# {}", name.as_ref()))?;
     }
-    tree.as_deref_mut()
-        .map(|t| t.add_empty_child("README.md".to_string()));
-    tree.as_deref_mut()
-        .map(|t| t.add_empty_child("Cargo.toml".to_string()));
-    tree.as_deref_mut()
-        .map(|t| t.begin_child("src".to_string()));
-    tree.as_deref_mut()
-        .map(|t| t.add_empty_child("lib.rs".to_string()));
+    tree.as_deref_mut().map(|t| t.add_empty_child("README.md".to_string()));
+    tree.as_deref_mut().map(|t| t.add_empty_child("Cargo.toml".to_string()));
+    tree.as_deref_mut().map(|t| t.begin_child("src".to_string()));
+    tree.as_deref_mut().map(|t| t.add_empty_child("lib.rs".to_string()));
     tree.map(|t| t.end_child());
     Ok(())
 }
@@ -181,8 +171,7 @@ pub fn create_lib(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs::File;
-    use std::io::Read;
+    use std::{fs::File, io::Read};
     use tempfile::tempdir;
 
     #[test]
@@ -252,17 +241,8 @@ clap = {{ version = "{}", features = ["derive"] }}
         let dir = tempdir().unwrap();
         let dir_path_buf = dir.path().to_path_buf();
         let package_dir = dir_path_buf.join("example");
-        create_bin(
-            &package_dir,
-            "example",
-            Some("example binary"),
-            false,
-            false,
-            None,
-            None,
-            None,
-        )
-        .unwrap();
+        create_bin(&package_dir, "example", Some("example binary"), false, false, None, None, None)
+            .unwrap();
 
         assert!(package_dir.exists());
         assert!(package_dir.join("src").exists());
@@ -275,17 +255,8 @@ clap = {{ version = "{}", features = ["derive"] }}
         let dir = tempdir().unwrap();
         let dir_path_buf = dir.path().to_path_buf();
         let package_dir = dir_path_buf.join("example");
-        create_lib(
-            &package_dir,
-            "example",
-            Some("example lib"),
-            false,
-            false,
-            None,
-            None,
-            None,
-        )
-        .unwrap();
+        create_lib(&package_dir, "example", Some("example lib"), false, false, None, None, None)
+            .unwrap();
 
         assert!(package_dir.exists());
         assert!(package_dir.join("src").exists());
