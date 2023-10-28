@@ -72,7 +72,7 @@ pub fn get_current_username(authors: &Option<Vec<String>>) -> String {
     }
 }
 
-/// Dynamically gets the authors.
+/// Returns the current authors.
 pub fn get_authors(authors: Option<Vec<String>>) -> toml_edit::Item {
     let mut array = toml_edit::Array::default();
     match authors {

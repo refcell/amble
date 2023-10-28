@@ -5,7 +5,7 @@ resolver = "2"
 
 [workspace.package]
 description = "First class, scalable rust project generator with batteries included."
-version = "0.1.56"
+version = "0.1.57"
 edition = "2021"
 license = "MIT"
 authors = ["refcell"]
