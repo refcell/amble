@@ -168,7 +168,7 @@ pub fn run() -> Result<()> {
     if !dry_run && !overwrite {
         tracing::warn!("Running in non-dry run mode.");
         tracing::warn!("This action may be destructive.");
-        if !Confirm::new("Running amble in non-dry mode, are you sure you wish to proceed?")
+        if !Confirm::new("Running amble in without dry mode, are you sure you wish to proceed?")
             .prompt()?
         {
             println!("Phew, close call... aborting");
