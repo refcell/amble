@@ -63,7 +63,7 @@ pub struct Args {
     full: bool,
 
     /// Adds an `etc/` directory to the project.
-    /// This _Et Cetera_ directory is used for storing miscellaneous files.
+    /// This directory is used for storing miscellaneous files.
     #[arg(long)]
     etc: bool,
 

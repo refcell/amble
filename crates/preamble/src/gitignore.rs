@@ -10,7 +10,7 @@ pub fn create(dir: &Path, dry: bool, tree: Option<&mut TreeBuilder>) -> Result<(
     crate::utils::create_dir_gracefully!(dir, dry);
 
     if !dry {
-        tracing::debug!("Writing .gitignore to {:?}", dir.join(".gitignore"));
+        tracing::debug!("Writing gitignore to {:?}", dir.join(".gitignore"));
         let mut file =
             std::fs::File::options().append(true).create(true).open(dir.join(".gitignore"))?;
         let rust_gitignore = gitignores::Root::Rust.to_string();
