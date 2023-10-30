@@ -8,5 +8,6 @@
 #![deny(unused_must_use, rust_2018_idioms)]
 #![cfg_attr(docsrs, feature(doc_cfg, doc_auto_cfg))]
 
-/// The CLI Module.
-pub mod cli;
+#[doc(inherit)]
+pub use cli::run;
+mod cli;

@@ -1,14 +1,13 @@
 [package]
 name = "preamble2"
 description = "Modern rust project manager library re-written from the ground up."
-# version = { workspace = true }
 version = "0.0.1"
 edition = { workspace = true }
 authors = { workspace = true }
 license = { workspace = true }
 repository = { workspace = true }
 homepage = { workspace = true }
-include = ["src/", "etc/"]
+include = ["src/"]
 
 [lib]
 path = "src/lib.rs"
@@ -37,3 +36,8 @@ reqwest = { workspace = true }
 [dev-dependencies]
 tempfile = "3.8"
 doc-comment = "0.3"
+
+[features]
+default = ["async", "clap"]
+async = ["tokio"]
+clap = ["clap"]
