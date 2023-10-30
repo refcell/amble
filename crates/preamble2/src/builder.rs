@@ -29,14 +29,22 @@ pub struct PipelineBuilder {
     /// Dry run
     pub dry_run: bool,
 
-    /// The project name.
+    /// With input output 
     pub name: Option<String>,
+
+    /// The internal Pipeline [crate::Config].
+    pub config: crate::Config,
 }
 
 impl PipelineBuilder {
     /// Constructs a new PipelineBuilder.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Parses the pipeline from the command line.
+    pub fn parse() -> Self {
+        Self { config: Config::parse(), ..Self::default() }
     }
 
     /// Sets the pipeline to use dry run mode.
@@ -57,5 +65,13 @@ impl PipelineBuilder {
             // dry_run: self.dry_run,
             // name: self.name,
         }
+    }
+
+    /// Creates the pipeline and executes it, bubbling up
+    /// any errors and returning the pipeline.
+    pub fn execute(self) -> Result<crate::Pipeline> {
+        let mut pipeline = self.build();
+        pipeline.execute()?;
+        Ok(pipeline)
     }
 }

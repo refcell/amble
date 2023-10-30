@@ -60,10 +60,15 @@ pub use crate::{
     telemetry::{
         init_default_tracing, init_tracing_subscriber, init_tracing_subscriber_with_env, Level,
     },
+    #[cfg(feature = "clap")]
+    config::{Config, Parser},
 };
 
 pub mod builder;
 pub mod pipeline;
 pub mod telemetry;
+
+#[cfg(feature = "clap")]
+pub mod config;
 
 // =============================================================================

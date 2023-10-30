@@ -1,138 +1,20 @@
 use anyhow::Result;
-use clap::{ArgAction, Parser};
 use inquire::Confirm;
 use ptree::TreeBuilder;
 
-use preamble::{bins, cargo, ci, etc, gitignore, libs, license, root, telemetry, utils};
-
-/// Command line arguments.
-#[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
-pub struct Args {
-    /// Verbosity level (0-4). Default: 0 (ERROR).
-    #[arg(long, short, action = ArgAction::Count, default_value = "0")]
-    v: u8,
-
-    /// Dry run mode.
-    /// If this flag is provided, the cli will not execute commands,
-    /// printing the directories and files that would be created instead.
-    #[arg(long)]
-    dry_run: bool,
-
-    /// Overwrite existing files.
-    /// If this flag is provided, the cli will overwrite existing files.
-    #[arg(long)]
-    overwrite: bool,
-
-    /// Bare mode. Only for `--bin` and `--lib` flags. If specified,
-    /// generated files will be the basic `cargo init` files.
-    #[arg(long)]
-    bare: bool,
-
-    /// The project name.
-    /// This is used for the default binary application name.
-    #[arg(long, short, default_value = "example")]
-    name: String,
-
-    /// Add github actions ci workflow.
-    #[arg(long, short)]
-    with_ci: bool,
-
-    /// Copy the specified workflow file to the project's `.github/workflows/` directory.
-    #[arg(long, short)]
-    ci_yml: Option<String>,
-
-    /// Override the project authors.
-    #[arg(long, short)]
-    authors: Option<Vec<String>>,
-
-    /// Builds a cargo binary project.
-    #[arg(long, short)]
-    bin: bool,
-
-    /// Builds a cargo library project.
-    #[arg(long, short)]
-    lib: bool,
-
-    /// Prevents a readme from being generated or overwritten.
-    #[arg(long)]
-    without_readme: bool,
-
-    /// Full generates a full project with license, ci, gitignore, etc included.
-    #[arg(long)]
-    full: bool,
-
-    /// Adds an `etc/` directory to the project.
-    /// This directory is used for storing miscellaneous files.
-    #[arg(long)]
-    etc: bool,
-
-    /// Adds template assets to the `etc/` directory of the generate project.
-    /// Will be run automatically if the `--full` flag is provided.
-    #[arg(long)]
-    assets: bool,
-
-    /// Adds an MIT License to the project.
-    /// The MIT License type can be overridden with the `--with-license` flag.
-    #[arg(long)]
-    license: bool,
-
-    /// Adds a Gitignore file to the project.
-    #[arg(long)]
-    gitignore: bool,
-
-    /// Specifies the description of the project in the top-level `Cargo.toml` workspace.
-    #[arg(long, short)]
-    description: Option<String>,
-
-    /// Adds these dependencies to the top-level `Cargo.toml` workspace
-    /// alongside the default dependencies.
-    #[arg(long)]
-    dependencies: Option<Vec<String>>,
-
-    /// Lists the default dependencies.
-    #[arg(long)]
-    list: bool,
-
-    /// License Override.
-    /// This will override the default MIT License.
-    /// The license type must be a valid SPDX license identifier.
-    #[arg(long)]
-    with_license: Option<String>,
-
-    /// The path to the project directory.
-    /// By default, the current working directory is used.
-    /// If any rust artifacts are detected in the specified
-    /// or unspecified directory, an error will be thrown.
-    #[arg(default_value = ".")]
-    project_dir: String,
-}
+use preamble2::{Pipeline, Config, Parser};
 
 /// CLI Entrypoint.
 pub fn run() -> Result<()> {
-    let Args {
-        v,
-        dry_run,
-        mut assets,
-        bare,
-        without_readme,
-        name,
-        project_dir,
-        mut overwrite,
-        mut with_ci,
-        ci_yml,
-        authors,
-        bin,
-        lib,
-        mut license,
-        with_license,
-        mut gitignore,
-        full,
-        description,
-        list,
-        dependencies,
-        mut etc,
-    } = Args::parse();
+    let mut pipeline = Pipeline::parse();
+    pipeline.execute()?;
+    pipeline.commit()?;
+    Ok(())
+
+    .with_name("example").dry_run(true).build();
+    pipeline.execute().unwrap();
+    pipeline.commit().unwrap();
+
     let project_dir_path = std::path::Path::new(&project_dir);
 
     if full {
