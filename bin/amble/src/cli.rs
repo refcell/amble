@@ -3,7 +3,7 @@ use clap::{ArgAction, Parser};
 use inquire::Confirm;
 use ptree::TreeBuilder;
 
-use preamble::{bins, cargo, ci, etc, gitignore, libs, license, root, telemetry, utils};
+use preamble::{bins, cargo, ci, etc, git, gitignore, libs, license, root, telemetry, utils};
 
 /// Command line arguments.
 #[derive(Parser, Debug)]
@@ -106,6 +106,10 @@ pub struct Args {
     /// or unspecified directory, an error will be thrown.
     #[arg(default_value = ".")]
     project_dir: String,
+
+    /// Create git repository with user's github username
+    #[arg(long)]
+    git: Option<Option<String>>,
 }
 
 /// CLI Entrypoint.
@@ -132,6 +136,7 @@ pub fn run() -> Result<()> {
         list,
         dependencies,
         mut etc,
+        git,
     } = Args::parse();
     let project_dir_path = std::path::Path::new(&project_dir);
 
@@ -188,6 +193,12 @@ pub fn run() -> Result<()> {
 
     if gitignore {
         gitignore::create(project_dir_path, dry_run, Some(&mut builder))?;
+    }
+
+    if let Some(git) = git {
+        git::create(project_dir_path, dry_run, git)?;
+    } else if !bin && !lib {
+        git::create(project_dir_path, dry_run, None)?;
     }
 
     if etc {

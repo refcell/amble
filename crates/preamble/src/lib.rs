@@ -43,6 +43,9 @@ pub mod etc;
 /// Gitignore File Handler
 pub mod gitignore;
 
+/// Git repository handler
+pub mod git;
+
 /// Workspace Library Crate Builders
 pub mod libs;
 
