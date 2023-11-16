@@ -1,6 +1,7 @@
 use leon::Template;
 use std::{io::Write, path::Path};
 
+use crate::git;
 use anyhow::Result;
 use ptree::TreeBuilder;
 use tracing::instrument;
@@ -46,26 +47,11 @@ pub fn create(
     Ok(())
 }
 
-/// Attempts to retrieve the current git username.
-pub fn try_git_username() -> Option<String> {
-    match std::process::Command::new("git").arg("config").arg("--get").arg("user.name").output() {
-        Ok(output) => {
-            if output.status.success() {
-                let name = String::from_utf8(output.stdout).ok()?;
-                Some(name.trim().to_string())
-            } else {
-                None
-            }
-        }
-        Err(_) => None,
-    }
-}
-
 /// Returns the current username.
 pub fn get_current_username(authors: &Option<Vec<String>>) -> String {
     match authors {
         Some(v) => v[0].clone(),
-        None => match try_git_username() {
+        None => match git::try_git_username() {
             Some(name) => name,
             None => whoami::username().to_string(),
         },
@@ -77,7 +63,7 @@ pub fn get_authors(authors: Option<Vec<String>>) -> toml_edit::Item {
     let mut array = toml_edit::Array::default();
     match authors {
         Some(v) => v.into_iter().for_each(|a| array.push(a)),
-        None => match try_git_username() {
+        None => match git::try_git_username() {
             Some(name) => array.push(name),
             None => array.push(whoami::username().to_string()),
         },
@@ -124,11 +110,10 @@ pub fn fill_cargo(
     manifest["workspace.package"]["edition"] = toml_edit::value("2021");
     manifest["workspace.package"]["license"] = toml_edit::value("MIT");
     let user = get_current_username(&author);
+    let repo = git::build_repository_url(&user, name);
     manifest["workspace.package"]["authors"] = get_authors(author);
-    manifest["workspace.package"]["repository"] =
-        toml_edit::value(format!("https://github.com/{}/{}", user, name));
-    manifest["workspace.package"]["homepage"] =
-        toml_edit::value(format!("https://github.com/{}/{}", user, name));
+    manifest["workspace.package"]["repository"] = toml_edit::value(&repo);
+    manifest["workspace.package"]["homepage"] = toml_edit::value(&repo);
     let mut array = toml_edit::Array::default();
     array.push("**/target".to_string());
     array.push("benches/".to_string());

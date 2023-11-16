@@ -136,7 +136,7 @@ pub fn run() -> Result<()> {
         list,
         dependencies,
         mut etc,
-        git,
+        mut git,
     } = Args::parse();
     let project_dir_path = std::path::Path::new(&project_dir);
 
@@ -146,6 +146,7 @@ pub fn run() -> Result<()> {
         gitignore = true;
         etc = true;
         assets = true;
+        git = Some(None);
     }
 
     if list {
@@ -195,10 +196,8 @@ pub fn run() -> Result<()> {
         gitignore::create(project_dir_path, dry_run, Some(&mut builder))?;
     }
 
-    if let Some(git) = git {
-        git::create(project_dir_path, dry_run, git)?;
-    } else if !bin && !lib {
-        git::create(project_dir_path, dry_run, None)?;
+    if let Some(u) = git {
+        git::create(project_dir_path, dry_run, u, Some(&mut builder))?;
     }
 
     if etc {
