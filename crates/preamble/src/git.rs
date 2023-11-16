@@ -2,7 +2,8 @@ use anyhow::Result;
 use std::path::Path;
 use tracing::instrument;
 
-/// Create git repository with given github username. If github username is not specified, try to grab one
+/// Create git repository with given github username. If github username is not specified, try to
+/// grab one
 #[instrument(name = "git", skip(dir, dry))]
 pub fn create(dir: &Path, dry: bool, github_username: Option<String>) -> Result<()> {
     crate::utils::create_dir_gracefully!(dir, dry);
